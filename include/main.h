@@ -14,5 +14,7 @@
 #include "debug.h"
 #include "spi_dma.h"
 #include "i2c.h"
+#include "tmp102.h"
+#include "eeprom_24aa256uid.h"
 
 #endif // INC_MAIN_H

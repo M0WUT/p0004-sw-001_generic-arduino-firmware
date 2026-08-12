@@ -1,7 +1,7 @@
 #include "main.h"
 
 StatusMonitor statusMonitor = StatusMonitor();
-I2C i2c_internal = I2C(gpio_i2c_int_scl, gpio_i2c_int_sda);
+I2CBus i2c_internal = I2CBus(gpio_i2c_int_scl, gpio_i2c_int_sda);
 // lv_display_t *disp;
 // TFTHandler *tft;
 // lv_style_t *largeTextStyle;
@@ -20,7 +20,13 @@ I2C i2c_internal = I2C(gpio_i2c_int_scl, gpio_i2c_int_sda);
 
 void setup()
 {
-  i2c_internal.scan(70, 81);
+  // i2c_internal.scan();
+  TMP102 tmp102 = TMP102(&i2c_internal, 0x48);
+  float temperature = tmp102.read_temperature();
+  DEBUG_PRINTF("Temperature: %.2f°C\n", temperature);
+  EEPROM24AA256UID eeprom = EEPROM24AA256UID(&i2c_internal, 0x50);
+  uint8_t mac[6];
+  eeprom.read_mac_address(mac);
 }
 
 void loop() { ; }
