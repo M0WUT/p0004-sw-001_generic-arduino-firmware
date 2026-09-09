@@ -18,7 +18,7 @@ extern "C" void DMA1_Stream0_IRQHandler(void)
     HAL_DMA_IRQHandler(&tftSpiDma->hdma);
 }
 
-extern "C" void SPI3_IRQHandler(void)
+extern "C" void SPI4_IRQHandler(void)
 {
     HAL_SPI_IRQHandler(tftSpiDma->hspi);
 }

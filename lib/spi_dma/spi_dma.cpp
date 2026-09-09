@@ -42,7 +42,7 @@ void SPIDMA::_init_dma()
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     hdma.Instance = DMA1_Stream0;
-    hdma.Init.Request = DMA_REQUEST_SPI3_TX;
+    hdma.Init.Request = DMA_REQUEST_SPI4_TX;
     hdma.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma.Init.MemInc = DMA_MINC_ENABLE;
@@ -66,6 +66,6 @@ void SPIDMA::_init_interrupts()
     HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 
-    HAL_NVIC_SetPriority(SPI3_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(SPI3_IRQn);
+    HAL_NVIC_SetPriority(SPI4_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SPI4_IRQn);
 }
