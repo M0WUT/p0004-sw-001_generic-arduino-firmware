@@ -9,13 +9,13 @@ const int UART_DEBUG_BAUD = 115200;
 // LCD
 const int gpio_tft_dc = PE1;
 const int gpio_tft_rst = PE0;
-const int gpio_tft_bl = PE3;
+const int gpio_tft_bl = PE5;
 const int gpio_tft_cs = PE4;
 const int gpio_tft_mosi = PE6;
-const int gpio_tft_miso = PE5;
+const int gpio_tft_miso = PE13; // Dummy pin
 const int gpio_tft_sclk = PE2;
 #define TFT_EXPECTED_SPI_CONTROLLER SPI4
-
+const int TFT_PWM_FREQUENCY = 25000;
 // W5500 (Ethernet PHY)
 const int gpio_w5500_cs = PB9;
 const int gpio_w5500_miso = PC2_C;
@@ -39,6 +39,6 @@ const int gpio_buzzer = PB0;
 const int gpio_button_left = PE10;
 const int gpio_button_right = PE12;
 const int gpio_button_up = PE9;
-const int gpio_button_down = PE13;
+const int gpio_button_down = PE14;
 
 #endif // INC_PINOUT_H

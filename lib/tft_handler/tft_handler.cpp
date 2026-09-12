@@ -1,12 +1,13 @@
 #include "tft_handler.h"
 
-TFTHandler::TFTHandler(SPIDMA *pspi, int gpioDc, int gpioCs, int gpioReset, int horRes, int verRes, lv_disp_rotation_t rotation)
+TFTHandler::TFTHandler(SPIDMA *pspi, int gpioDc, int gpioCs, int gpioReset, int gpioBacklight, int horRes, int verRes, lv_disp_rotation_t rotation)
 {
     // Copy variables into class members
     _pspi = pspi;
     _gpioDc = gpioDc;
     _gpioCs = gpioCs;
     _gpioReset = gpioReset;
+    _gpioBacklight = gpioBacklight;
     _horRes = horRes;
     _verRes = verRes;
     _rotation = rotation;
@@ -71,6 +72,10 @@ void TFTHandler::lcd_send_colour(lv_display_t *disp, const uint8_t *cmd, size_t 
 
 void TFTHandler::_init_io()
 {
+    // Immediately blank backlight to avoid rubbish on screen
+    pinMode(_gpioBacklight, OUTPUT);
+    digitalWrite(_gpioBacklight, LOW);
+
     pinMode(_gpioReset, OUTPUT);
     digitalWrite(_gpioReset, HIGH);
 
@@ -137,4 +142,12 @@ void TFTHandler::spi_transfer_complete_cb()
     digitalWrite(_gpioCs, 1);
     lv_disp_flush_ready(_disp);
     _bus_busy = 0;
+}
+
+void TFTHandler::set_lcd_brightness(uint8_t brightness)
+{
+    // Brightness is duty cycle in 8 bits . i.e. 0 = off, 255 = fully on.
+    analogWrite(_gpioBacklight, brightness);
+    // +1 ensures that 0 maps to 0 percent, 255 prints as 100% - otherwise the max it shows is 99%
+    DEBUG_PRINTF("Display backlight set to %d\%%\n", ((100 * ((uint32_t)brightness + 1)) >> 8) & 0xFF);
 }

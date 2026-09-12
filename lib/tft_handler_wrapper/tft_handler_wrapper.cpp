@@ -38,18 +38,18 @@ static void lcd_send_colour(lv_display_t *disp, const uint8_t *cmd, size_t cmdSi
     return tft->lcd_send_colour(disp, cmd, cmdSize, param, paramSize);
 }
 
-TFTHandler *create_tft_handler(SPISettings settings, int gpioMosi, int gpioMiso, int gpioSclk, int gpioCs, int gpioDc, int gpioReset, int horRes, int verRes, lv_disp_rotation_t rotation)
+TFTHandler *create_tft_handler(SPISettings settings, int gpioMosi, int gpioMiso, int gpioSclk, int gpioCs, int gpioDc, int gpioReset, int gpioBacklight, int horRes, int verRes, lv_disp_rotation_t rotation)
 {
     tftSpiDma = new SPIDMA(gpioMosi, gpioMiso, gpioSclk, settings);
     if (tftSpiDma->hspi->Instance != TFT_EXPECTED_SPI_CONTROLLER)
     {
-        // I'm being really lazy and hardcoded this for SPI3 and DMA1 Stream 0
+        // I'm being really lazy and hardcoded this for SPI4 and DMA1 Stream 0
         // Checking for this (as only one SPI instance can be SPI1)
         // The other ones don't need it
         while (1)
             ;
     }
-    tft = new TFTHandler(tftSpiDma, gpioDc, gpioCs, gpioReset, horRes, verRes, rotation);
+    tft = new TFTHandler(tftSpiDma, gpioDc, gpioCs, gpioReset, gpioBacklight, horRes, verRes, rotation);
     HAL_SPI_RegisterCallback(tftSpiDma->hspi, HAL_SPI_TX_COMPLETE_CB_ID, lcd_transfer_complete_callback);
     tft->create_lvgl_screen(lcd_send_cmd, lcd_send_colour);
     return tft;

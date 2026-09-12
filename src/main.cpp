@@ -4,6 +4,7 @@ StatusMonitor statusMonitor = StatusMonitor();
 I2CBus i2c_internal = I2CBus(gpio_i2c_int_scl, gpio_i2c_int_sda);
 lv_display_t *disp;
 TFTHandler *tft;
+Buzzer *buzzer;
 // lv_style_t *largeTextStyle;
 // SPIClass *spi;
 
@@ -18,19 +19,14 @@ lv_obj_t *main_scr;
 
 EthernetHandler *ethernetHandler;
 
-int melody[] = {
-
-    NOTE_C5, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_G4, 0, NOTE_B4, NOTE_C5};
-
-// note durations: 4 = quarter note, 8 = eighth note, etc.:
-int noteDurations[] = {
-
-    4, 8, 8, 4, 4, 4, 4, 4};
-
 const int button_list[] = {gpio_button_left, gpio_button_right, gpio_button_up, gpio_button_down};
 
 void setup()
 {
+  // TFT handler first so the LCD can be blanked immediately on startup
+  tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
+  disp = tft->get_lvgl_display();
+
   // i2c_internal.scan();
   TMP102 tmp102 = TMP102(&i2c_internal, 0x48);
   float temperature = tmp102.read_temperature();
@@ -39,38 +35,11 @@ void setup()
   uint8_t mac[6];
   eeprom.read_mac_address(mac);
 
-  pinMode(gpio_buzzer, OUTPUT);
+  buzzer = new Buzzer(gpio_buzzer);
+  buzzer->play_startup_sound();
 
-  // iterate over the notes of the melody:
-
-  for (int thisNote = 0; thisNote < 8; thisNote++)
-  {
-
-    // to calculate the note duration, take one second divided by the note type.
-
-    // e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-
-    int noteDuration = 1000 / noteDurations[thisNote];
-
-    tone(gpio_buzzer, melody[thisNote], noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-
-    // the note's duration + 30% seems to work well:
-
-    int pauseBetweenNotes = noteDuration * 1.30;
-
-    delay(pauseBetweenNotes);
-
-    // stop the tone playing:
-
-    noTone(8);
-  }
   ethernetHandler = new EthernetHandler();
   ethernetHandler->initialise();
-
-  tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, tft_width, tft_height, tft_rotation);
-  disp = tft->get_lvgl_display();
 
   main_scr = create_home_screen();
   lv_screen_load(main_scr);
@@ -80,6 +49,13 @@ void setup()
   lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
   lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
+  // Allow for all of the data on the LCD to be updated before we enable the backlight
+  // Just looks bad if we see garbage on the screen
+  for (int i = 0; i < 20; i++)
+  {
+    lv_task_handler();
+  }
+
   for (int i = 0; i < sizeof(button_list) / sizeof(button_list[0]); i++)
   {
     pinMode(button_list[i], INPUT_PULLUP);
@@ -88,15 +64,8 @@ void setup()
 
 void loop()
 {
-  ethernetHandler->tick();
   lv_task_handler();
-  for (int i = 0; i < sizeof(button_list) / sizeof(button_list[0]); i++)
-  {
-    if (!digitalRead(button_list[i]))
-    {
-      DEBUG_PRINTF("Button %d pressed\n", i + 1);
-    }
-  }
+  ethernetHandler->tick();
 }
 
 //   tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, tft_width, tft_height, tft_rotation);
