@@ -1,5 +1,6 @@
 #ifndef INC_MAIN_H
 #define INC_MAIN_H
+#include <ArduinoHA.h>
 #include <lvgl.h>
 #include "lcd_screens.h"
 #include <Arduino.h>
@@ -17,5 +18,8 @@
 #include "tmp102.h"
 #include "eeprom_24aa256uid.h"
 #include "buzzer.h"
+#include "service.h"
+#include <vector>
+#include "home_assistant_config.h"
 
 #endif // INC_MAIN_H

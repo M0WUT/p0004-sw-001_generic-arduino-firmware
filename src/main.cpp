@@ -18,8 +18,19 @@ lv_obj_t *main_scr;
 // lv_obj_t *rect;
 
 EthernetHandler *ethernetHandler;
+EthernetClient *haClient;
+HADevice *haDevice;
+HAMqtt *haMqtt;
+HASwitch *haSwitch;
+ServiceTracker *serviceTracker;
 
 const int button_list[] = {gpio_button_left, gpio_button_right, gpio_button_up, gpio_button_down};
+
+void onBacklightCommand(bool state, HASwitch *sender)
+{
+  tft->set_lcd_brightness(state ? 255 : 0);
+  sender->setState(state); // Report back
+}
 
 void setup()
 {
@@ -38,8 +49,19 @@ void setup()
   buzzer = new Buzzer(gpio_buzzer);
   buzzer->play_startup_sound();
 
-  ethernetHandler = new EthernetHandler();
+  ethernetHandler = new EthernetHandler(mac);
   ethernetHandler->initialise();
+
+  haDevice = new HADevice(HOME_ASSISTANT_DEVICE_ID);
+  haClient = new EthernetClient();
+  haMqtt = new HAMqtt(*haClient, *haDevice);
+  haSwitch = new HASwitch("backlight");
+  haDevice->setName("Test");
+  haDevice->setSoftwareVersion("1.2.3");
+  haSwitch->setIcon("mdi:lightbulb");
+  haSwitch->setName("LCD_Backlight");
+  haSwitch->onCommand(onBacklightCommand);
+  haMqtt->begin(HOME_ASSISTANT_BROKER_IP, MOSQUITTO_USERNAME, MOSQUITTO_PASSWORD);
 
   main_scr = create_home_screen();
   lv_screen_load(main_scr);
@@ -60,12 +82,15 @@ void setup()
   {
     pinMode(button_list[i], INPUT_PULLUP);
   }
+  serviceTracker = new ServiceTracker(NULL, 0);
+  serviceTracker->initialiseServices((ServiceContext *)NULL);
 }
 
 void loop()
 {
   lv_task_handler();
   ethernetHandler->tick();
+  // haMqtt->loop();
 }
 
 //   tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, tft_width, tft_height, tft_rotation);

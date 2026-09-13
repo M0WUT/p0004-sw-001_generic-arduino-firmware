@@ -10,6 +10,7 @@
 // to manually implement a function with all the right type definitions
 #ifdef DEBUG
 #include "pinout.h"
+
 #define DEBUG_PRINT(...)        \
     statusMonitor.print_time(); \
     statusMonitor.serial.print(__VA_ARGS__)

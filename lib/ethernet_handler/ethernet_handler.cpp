@@ -1,7 +1,10 @@
 #include "ethernet_handler.h"
 
-EthernetHandler::EthernetHandler(bool use_dhcp, int server_port, int max_clients)
+EthernetHandler::EthernetHandler(uint8_t mac[6], bool use_dhcp, int server_port, int max_clients)
 {
+    size_t mac_size = 6 * sizeof(byte);
+    _mac_address = (uint8_t *)malloc(mac_size);
+    memcpy(_mac_address, mac, mac_size);
     _use_dhcp = use_dhcp;
     _server_port = server_port;
     _max_clients = max_clients;
@@ -12,8 +15,6 @@ void EthernetHandler::initialise()
     _server = new EthernetServer(_server_port);
     EthernetClient _clients[_max_clients];
     _link_up = false;
-    _mac_address = (uint8_t *)malloc(6 * sizeof(uint8_t));
-    _load_mac_address();
     DEBUG_PRINTF("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", _mac_address[0], _mac_address[1], _mac_address[2], _mac_address[3], _mac_address[4], _mac_address[5]);
     _initialise_io();
     _reset_phy();
@@ -75,14 +76,6 @@ void EthernetHandler::_reset_phy()
     delay(10);
     digitalWrite(gpio_w5500_rstn, HIGH);
     delay(10);
-}
-
-void EthernetHandler::_load_mac_address()
-{
-    for (int i = 0; i < 6; i++)
-    {
-        _mac_address[i] = i + 2; // @TODO
-    }
 }
 
 void EthernetHandler::_update_link_state()

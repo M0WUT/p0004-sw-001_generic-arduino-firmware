@@ -10,7 +10,7 @@
 class EthernetHandler
 {
 public:
-    EthernetHandler(bool useDHCP = true, int serverPort = 23, int maxClients = 4);
+    EthernetHandler(uint8_t mac[6], bool useDHCP = true, int serverPort = 23, int maxClients = 4);
     void initialise();
     void tick();
 
@@ -26,7 +26,6 @@ private:
     void _get_ip_address();
     void _initialise_io();
     void _reset_phy();
-    void _load_mac_address();
     void _update_link_state();
 };
 
