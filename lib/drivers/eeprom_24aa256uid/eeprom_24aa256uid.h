@@ -1,7 +1,7 @@
 #ifndef EEPROM_24AA256UID_H
 #define EEPROM_24AA256UID_H
 
-#include "i2c.h"
+#include "drivers/i2c/i2c.h"
 
 class EEPROM24AA256UID : public I2CDevice
 {

@@ -1,4 +1,4 @@
-#include "eeprom_24aa256uid.h"
+#include "drivers/eeprom_24aa256uid/eeprom_24aa256uid.hpp"
 
 const int REG_MAC_ADDRESS = 0x7F7A;
 const int REG_MANUFACTUER_CODE = 0x7FFA;

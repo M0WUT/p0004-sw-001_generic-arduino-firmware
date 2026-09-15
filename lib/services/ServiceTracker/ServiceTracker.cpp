@@ -1,40 +1,4 @@
-#include "service.h"
-
-Service::Service(ServiceID serviceID) : _serviceID(serviceID)
-{
-}
-
-void Service::initialise(ServiceContext *ctx)
-{
-    _ctx = ctx;
-    _debug_println("Initialised");
-}
-
-void Service::_debug_print(const char *str)
-{
-    DEBUG_PRINTF("[%s] %s", _serviceID._to_string(), str);
-}
-
-void Service::_debug_printf(const char *fmt, ...)
-{
-    char format[128];
-
-    va_list args;
-    va_start(args, fmt);
-    snprintf(format, sizeof(format), "[%s] %s", _serviceID._to_string(), fmt);
-    DEBUG_PRINTF(format, args);
-    va_end(args);
-}
-
-void Service::_debug_println(const char *str)
-{
-    DEBUG_PRINTF("[%s] %s\n", _serviceID._to_string(), str);
-}
-
-void Service::_debug_print_service_id()
-{
-    DEBUG_PRINTF("[%s] ", _serviceID._to_string());
-}
+#include "ServiceTracker.h"
 
 ServiceTracker::ServiceTracker(Service *extraServiceList, size_t len)
 {

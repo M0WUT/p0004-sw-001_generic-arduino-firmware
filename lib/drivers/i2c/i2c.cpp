@@ -1,4 +1,4 @@
-#include "i2c.h"
+#include "drivers/i2c/i2c.hpp"
 
 I2CBus::I2CBus(const int gpio_scl, const int gpio_sda) : _i2c(gpio_sda, gpio_scl)
 {

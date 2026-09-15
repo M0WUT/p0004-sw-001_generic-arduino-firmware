@@ -20,7 +20,7 @@ const int TFT_PWM_FREQUENCY = 25000;
 const int gpio_w5500_cs = PB9;
 const int gpio_w5500_miso = PC2_C;
 const int gpio_w5500_mosi = PC1;
-const int gpio_w5500_sck = PB13;
+const int gpio_w5500_sclk = PB13;
 const int gpio_w5500_rstn = PC6;
 
 // RGB LED
@@ -31,6 +31,7 @@ const int gpio_led_blue = PA9;
 // Internal I2C
 const int gpio_i2c_int_scl = PD12;
 const int gpio_i2c_int_sda = PD13;
+const int int_eeprom_i2c_addr = 0x50;
 
 // Buzzer
 const int gpio_buzzer = PB0;

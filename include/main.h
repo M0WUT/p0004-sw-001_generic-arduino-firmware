@@ -1,25 +1,14 @@
 #ifndef INC_MAIN_H
 #define INC_MAIN_H
-#include <ArduinoHA.h>
-#include <lvgl.h>
-#include "lcd_screens.h"
+
 #include <Arduino.h>
-#include <SPI.h>
-#include <Wire.h>
+#include <lvgl.h>
+#include <ArduinoHA.h>
+
 #include "pinout.h"
-#include "lcd_properties.h"
-#include "tft_handler.h"
-#include "tft_handler_wrapper.h"
-#include "grid_handler.h"
-#include "ethernet_handler.h"
-#include "debug.h"
-#include "spi_dma.h"
-#include "i2c.h"
-#include "tmp102.h"
-#include "eeprom_24aa256uid.h"
-#include "buzzer.h"
-#include "service.h"
-#include <vector>
-#include "home_assistant_config.h"
+#include "helpers/TimeHelper/TimeHelper.h"
+#include "helpers/DebugUartHelper/DebugUartHelper.h"
+#include "helpers/EepromHelper/EepromHelper.h"
+#include "services/ServiceTracker/ServiceTracker.h"
 
 #endif // INC_MAIN_H

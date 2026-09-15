@@ -50,5 +50,7 @@ void Buzzer::play_startup_sound()
 
 void Buzzer::play_keypress_sound()
 {
-    play_dot_sound();
+    // Async function - don't block for it to finish
+    // like play_dot_sound does
+    play_tone(_default_tone_freq_hz, _default_dot_duration_ms);
 }

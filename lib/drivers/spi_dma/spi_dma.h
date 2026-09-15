@@ -4,7 +4,6 @@
 #include <SPI.h>
 #include "pinout.h"
 #include "misc.h"
-#include "debug.h"
 
 class SPIDMA
 {
