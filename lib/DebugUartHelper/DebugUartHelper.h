@@ -2,7 +2,8 @@
 #define DEBUGUARTHELPER_H
 
 #include <Arduino.h>
-#include "helpers/TimeHelper/TimeHelper.h"
+#include "TimeHelper.h"
+#include "pinout.h"
 
 #define DEBUG
 

@@ -1,6 +1,8 @@
 #ifndef INC_PINOUT_H
 #define INC_PINOUT_H
 
+#include <Arduino.h>
+
 // DEBUG UART
 const int gpio_uart_debug_tx = PD5;
 const int gpio_uart_debug_rx = PD6;

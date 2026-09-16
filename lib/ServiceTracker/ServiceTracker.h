@@ -1,8 +1,8 @@
 #ifndef SERVICETRACKER_H
 #define SERVICETRACKER_H
 
-#include "services/Service/Service.h"
-#include "services/EthernetService/EthernetService.h"
+#include "Service.h"
+#include "EthernetService.h"
 
 class ServiceTracker
 {

@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-#include "misc/misc.h"
+#include "misc.h"
 
 class SpiEthernetPhy
 {

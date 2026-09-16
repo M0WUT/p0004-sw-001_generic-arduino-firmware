@@ -2,8 +2,8 @@
 #define ETHERNETSERVICE_H
 
 #include "pinout.h"
-#include "services/Service/Service.h"
-#include "drivers/SpiEthernetPhy/SpiEthernetPhy.h"
+#include "Service.h"
+#include "SpiEthernetPhy.h"
 
 class EthernetService : public Service
 {

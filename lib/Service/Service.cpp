@@ -10,6 +10,11 @@ void Service::initialise(ServiceContext *ctx)
     _debug_println("Initialised");
 }
 
+void Service::tick()
+{
+    _debug_println("Tick");
+}
+
 void Service::_debug_print(const char *str)
 {
     _ctx->debugUartHelper->printf("[%s] %s", _serviceID._to_string(), str);

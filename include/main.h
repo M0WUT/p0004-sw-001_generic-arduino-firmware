@@ -6,9 +6,9 @@
 #include <ArduinoHA.h>
 
 #include "pinout.h"
-#include "helpers/TimeHelper/TimeHelper.h"
-#include "helpers/DebugUartHelper/DebugUartHelper.h"
-#include "helpers/EepromHelper/EepromHelper.h"
-#include "services/ServiceTracker/ServiceTracker.h"
+#include "TimeHelper.h"
+#include "DebugUartHelper.h"
+#include "EepromHelper.h"
+#include "ServiceTracker.h"
 
 #endif // INC_MAIN_H

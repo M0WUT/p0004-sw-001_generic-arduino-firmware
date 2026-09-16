@@ -4,9 +4,9 @@
 #include <Arduino.h>
 #include <enum.h>
 
-#include "helpers/TimeHelper/TimeHelper.h"
-#include "helpers/DebugUartHelper/DebugUartHelper.h"
-#include "helpers/EepromHelper/EepromHelper.h"
+#include "TimeHelper.h"
+#include "DebugUartHelper.h"
+#include "EepromHelper.h"
 
 // Definitions here to exact numbers are important and must not be changed
 // List must be continuous 0 -> N. Additional services must take out a number in this Enum

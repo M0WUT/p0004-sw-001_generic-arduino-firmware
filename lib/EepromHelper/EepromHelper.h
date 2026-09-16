@@ -1,7 +1,7 @@
 #ifndef EEPROMHELPER_H
 #define EEPROMHELPER_H
 
-#include "drivers/eeprom_24aa256uid/eeprom_24aa256uid.h"
+#include "eeprom_24aa256uid.h"
 
 class EepromHelper
 {

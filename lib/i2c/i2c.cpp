@@ -1,14 +1,13 @@
-#include "drivers/i2c/i2c.hpp"
+#include "i2c.h"
 
 I2CBus::I2CBus(const int gpio_scl, const int gpio_sda) : _i2c(gpio_sda, gpio_scl)
 {
     _i2c.begin();
-    DEBUG_PRINTLN("Initialised " + _to_str());
 }
 
 int I2CBus::scan(int start_addr, int stop_addr, int *buf, int buf_length)
 {
-    DEBUG_PRINTF("Scanning %s. Addresses: %d-%d\n", _to_str().c_str(), start_addr, stop_addr);
+    // DEBUG_PRINTF("Scanning %s. Addresses: %d-%d\n", _to_str().c_str(), start_addr, stop_addr);
 
     int num_devices = 0;
 
@@ -22,7 +21,7 @@ int I2CBus::scan(int start_addr, int stop_addr, int *buf, int buf_length)
             continue;
 
         // Device ack-ed
-        DEBUG_PRINTF("Found device at 0x%02X\n", addr);
+        // DEBUG_PRINTF("Found device at 0x%02X\n", addr);
 
         // Only put as many found addresses in the buffer as it can hold
         if (num_devices < buf_length)
@@ -34,7 +33,7 @@ int I2CBus::scan(int start_addr, int stop_addr, int *buf, int buf_length)
         num_devices++;
     }
 
-    DEBUG_PRINTLN("Scan complete");
+    // DEBUG_PRINTLN("Scan complete");
 
     return num_devices;
 }
@@ -113,7 +112,7 @@ int I2CDevice::read_bytes(int reg_addr, uint8_t *data, uint8_t num_bytes, bool t
     int read_bytes = _i2c->readBytes(data, num_bytes);
     if (read_bytes != num_bytes)
     {
-        DEBUG_PRINTLN("I2C read failed to read expected number of bytes");
+        // DEBUG_PRINTLN("I2C read failed to read expected number of bytes");
     }
 
     _i2c->endTransmission();

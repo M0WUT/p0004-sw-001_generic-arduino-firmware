@@ -2,6 +2,14 @@
 
 DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper) : _uart(gpio_uart_rx, gpio_uart_tx), _timeHelper(timeHelper)
 {
+#ifdef DEBUG
+    _uart.begin(UART_DEBUG_BAUD);
+    do
+    {
+        delay(1000);
+    } while (!_uart);
+    this->println("Started");
+#endif
 }
 
 int DebugUartHelper::print(const char *str)
@@ -27,14 +35,12 @@ int DebugUartHelper::println(const char *str)
 int DebugUartHelper::printf(const char *format, ...)
 {
 #ifdef DEBUG
-    _timeHelper->print_time(&_uart);
-
     va_list args;
+    _timeHelper->print_time(&_uart);
     va_start(args, format);
-
-    int bytesWritten = _uart.printf(format, args);
+    int retval = _uart.printf(format, args);
     va_end(args);
-    return bytesWritten;
+    return retval;
 #else
     return 0;
 #endif
