@@ -36,10 +36,13 @@ int DebugUartHelper::printf(const char *format, ...)
 {
 #ifdef DEBUG
     va_list args;
+    char buffer[256];
+
     _timeHelper->print_time(&_uart);
     va_start(args, format);
-    int retval = _uart.printf(format, args);
+    int retval = vsnprintf(buffer, sizeof(buffer), format, args);
     va_end(args);
+    _uart.print(buffer);
     return retval;
 #else
     return 0;
