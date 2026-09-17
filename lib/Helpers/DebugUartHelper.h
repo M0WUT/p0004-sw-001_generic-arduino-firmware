@@ -14,10 +14,13 @@ public:
     int print(const char *str);
     int println(const char *str);
     int printf(const char *format, ...);
+    void print_timestamp();
 
 private:
     HardwareSerial _uart;
     TimeHelper *_timeHelper;
+    char *_printfBuffer;
+    const int _printfBufferSize = 128 * sizeof(char);
 };
 
 #endif // DEBUGUARTHELPER_H

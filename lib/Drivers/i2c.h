@@ -24,8 +24,12 @@ public:
     void write8(int reg_addr, uint8_t data, bool two_byte_address = false);
     uint16_t read16(int reg_addr, bool two_byte_address = false);
     void write16(int reg_addr, uint16_t data, bool two_byte_address = false);
-    void write_bytes(int reg_addr, uint8_t *data, uint8_t num_bytes, bool two_byte_address = false);
-    int read_bytes(int reg_addr, uint8_t *data, uint8_t num_bytes, bool two_byte_address = false);
+    void write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
+    int read_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
+
+protected:
+    void _write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
+    int _read_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
 
 private:
     I2CBus *_bus;

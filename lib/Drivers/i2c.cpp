@@ -87,34 +87,46 @@ void I2CDevice::write16(int reg_addr, uint16_t data, bool two_byte_address)
     write_bytes(reg_addr, data_buf, 2, two_byte_address);
 }
 
-void I2CDevice::write_bytes(int reg_addr, uint8_t *data, uint8_t num_bytes, bool two_byte_address)
+void I2CDevice::_write_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address)
 {
     _i2c->beginTransmission(_dev_addr);
     if (two_byte_address)
         _i2c->write((reg_addr >> 8) & 0xFF);
     _i2c->write(reg_addr & 0xFF);
-    for (int i = 0; i < num_bytes; i++)
+    for (int i = 0; i < numBytes; i++)
     {
         _i2c->write(data[i]);
     }
     _i2c->endTransmission();
 }
 
-int I2CDevice::read_bytes(int reg_addr, uint8_t *data, uint8_t num_bytes, bool two_byte_address)
+int I2CDevice::_read_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address)
 {
     _i2c->beginTransmission(_dev_addr);
     if (two_byte_address)
         _i2c->write((reg_addr >> 8) & 0xFF);
     _i2c->write(reg_addr & 0xFF);
     _i2c->endTransmission();
-    _i2c->requestFrom(_dev_addr, num_bytes);
+    _i2c->requestFrom(_dev_addr, numBytes);
 
-    int read_bytes = _i2c->readBytes(data, num_bytes);
-    if (read_bytes != num_bytes)
+    int read_bytes = _i2c->readBytes(data, numBytes);
+    if (read_bytes != numBytes)
     {
         // DEBUG_PRINTLN("I2C read failed to read expected number of bytes");
     }
 
     _i2c->endTransmission();
     return read_bytes;
+}
+
+void I2CDevice::write_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address)
+{
+    // Broken out into separate function as some things (like EEPROMs) may require multi-byte
+    // read/write operations to be split up to not cross for page boundaries
+    _write_bytes(reg_addr, data, numBytes, two_byte_address);
+}
+
+int I2CDevice::read_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address)
+{
+    return _read_bytes(reg_addr, data, numBytes, two_byte_address);
 }

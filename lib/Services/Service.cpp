@@ -2,6 +2,7 @@
 
 Service::Service(ServiceID serviceID) : _serviceID(serviceID)
 {
+    _printfBuffer = (char *)malloc(_printfBufferSize);
 }
 
 void Service::initialise(ServiceContext *ctx)
@@ -22,12 +23,10 @@ void Service::_debug_print(const char *str)
 
 void Service::_debug_printf(const char *fmt, ...)
 {
-    char format[128];
-
     va_list args;
     va_start(args, fmt);
-    snprintf(format, sizeof(format), "[%s] %s", _serviceID._to_string(), fmt);
-    _ctx->debugUartHelper->printf(format, args);
+    snprintf(_printfBuffer, _printfBufferSize, "[%s] %s", _serviceID._to_string(), fmt);
+    _ctx->debugUartHelper->printf(_printfBuffer, args);
     va_end(args);
 }
 

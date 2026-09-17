@@ -31,6 +31,8 @@ public:
 protected:
     ServiceID _serviceID;
     ServiceContext *_ctx;
+    char *_printfBuffer;
+    const int _printfBufferSize = 128 * sizeof(char);
     void _debug_print(const char *str);
     void _debug_printf(const char *fmt, ...);
     void _debug_println(const char *str);
