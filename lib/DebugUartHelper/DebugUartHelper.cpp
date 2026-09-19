@@ -1,7 +1,8 @@
 #include "DebugUartHelper.h"
 
-DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper) : _uart(gpio_uart_rx, gpio_uart_tx), _timeHelper(timeHelper)
+DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper) : _uart(gpio_uart_tx, gpio_uart_tx)
 {
+    _timeHelper = timeHelper;
 #ifdef DEBUG
     _printfBuffer = (char *)malloc(_printfBufferSize);
     _uart.begin(UART_DEBUG_BAUD);

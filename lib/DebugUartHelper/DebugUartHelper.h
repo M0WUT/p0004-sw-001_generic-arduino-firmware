@@ -17,7 +17,7 @@ public:
     void print_timestamp();
 
 private:
-    HardwareSerial _uart;
+    Uart _uart;
     TimeHelper *_timeHelper;
     char *_printfBuffer;
     const int _printfBufferSize = 128 * sizeof(char);

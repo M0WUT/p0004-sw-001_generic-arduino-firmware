@@ -9,7 +9,7 @@ class TimeHelper
 {
 public:
     TimeHelper();
-    void print_time(Stream *outputStream);
+    void print_time(Uart *outputStream);
 
 private:
     STM32RTC *_rtc;
