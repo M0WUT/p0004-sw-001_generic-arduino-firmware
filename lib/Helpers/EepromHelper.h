@@ -3,11 +3,13 @@
 
 #include "eeprom_24aa256uid.h"
 #include "DebugUartHelper.h"
+#include "ServiceId.h"
 
 class EepromHelper
 {
 public:
     EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper);
+    int load_service_data(ServiceId serviceId, void *eepromStruct, size_t eepromStructSize, int version);
 
 private:
     EEPROM24AA256UID _eeprom;

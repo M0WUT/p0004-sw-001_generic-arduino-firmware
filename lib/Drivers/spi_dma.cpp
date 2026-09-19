@@ -7,7 +7,7 @@ SPIDMA::SPIDMA(int gpio_mosi, int gpio_miso, int gpio_sclk, SPISettings settings
     _pspi->begin();
     hspi = _pspi->getHandle();
 
-    DEBUG_PRINTLN("Started SPI DMA driver on " + spi_controller_name(_pspi));
+    // DEBUG_PRINTLN("Started SPI DMA driver on " + spi_controller_name(_pspi));
 
     _spiSettings = settings;
     _pspi->beginTransaction(_spiSettings);

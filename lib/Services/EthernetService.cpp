@@ -1,7 +1,8 @@
 #include "EthernetService.h"
 
-EthernetService::EthernetService() : Service(ServiceID::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn)
+EthernetService::EthernetService() : Service(ServiceId::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn)
 {
+
     // size_t mac_size = 6 * sizeof(byte);
     // _mac_address = (uint8_t *)malloc(mac_size);
     // memcpy(_mac_address, mac, mac_size);

@@ -4,7 +4,8 @@ ServiceTracker::ServiceTracker(Service *extraServiceList, size_t len)
 {
     // This list of pointers will get destroyed after this function
     // But the pointers are still valid as the objects will still exist
-    Service *defaultServiceList[] = {&_coreService, &_powerService, &_thermalService, &_lcdService, &_ethernetService};
+    Service *defaultServiceList[] = {(Service *)&_ethernetService};
+    //{&_coreService, &_powerService, &_thermalService, &_lcdService, &_ethernetService};
 
     int numDefaultServices = sizeof(defaultServiceList) / sizeof(defaultServiceList[0]);
     _numServices = len + numDefaultServices;

@@ -9,6 +9,7 @@
 #include "TimeHelper.h"
 #include "DebugUartHelper.h"
 #include "EepromHelper.h"
+#include "ServiceContext.h"
 #include "ServiceTracker.h"
 
 #endif // INC_MAIN_H

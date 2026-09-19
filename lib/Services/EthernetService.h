@@ -21,6 +21,7 @@ private:
     EthernetClient *_clients;
     bool _link_up = 0;
     uint8_t *_mac_address;
+    EthernetServiceEepromStruct _eepromStruct;
 
     void _get_ip_address();
     void _update_link_state();
