@@ -11,16 +11,17 @@ class Service
 {
 public:
     Service(ServiceId serviceId);
-    virtual void initialise(ServiceContext *ctx);
+    virtual void initialise(ServiceContext *ctx) = 0;
     virtual void tick();
 
 protected:
     ServiceId _serviceId;
     ServiceContext *_ctx;
+    void initialise_service(ServiceContext *ctx);
     void _debug_print(const char *str);
     void _debug_printf(const char *fmt, ...);
     void _debug_println(const char *str);
-    std::variant<EthernetServiceEepromStruct> _eepromStruct;
+    EepromStruct _eepromStruct;
     int load_eeprom_data();
 
 private:

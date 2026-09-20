@@ -5,10 +5,10 @@ Service::Service(ServiceId serviceId) : _serviceId(serviceId)
     _printfBuffer = (char *)malloc(_printfBufferSize);
 }
 
-void Service::initialise(ServiceContext *ctx)
+void Service::initialise_service(ServiceContext *ctx)
 {
     _ctx = ctx;
-    _debug_println("Initialised");
+    _debug_println("Initialising...");
 }
 
 void Service::tick()
@@ -26,7 +26,7 @@ void Service::_debug_printf(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     snprintf(_printfBuffer, _printfBufferSize, "[%s] %s", _serviceId._to_string(), fmt);
-    _ctx->debugUartHelper->printf(_printfBuffer, args);
+    _ctx->debugUartHelper->vprintf(_printfBuffer, args);
     va_end(args);
 }
 
@@ -37,5 +37,7 @@ void Service::_debug_println(const char *str)
 
 int Service::load_eeprom_data()
 {
-    _ctx->eepromHelper->load_service_data(_serviceId, &_eepromStruct, sizeof(_eepromStruct), 1);
+
+    _ctx->eepromHelper->load_service_data(_serviceId, NULL, 4, 1);
+    return 0;
 }

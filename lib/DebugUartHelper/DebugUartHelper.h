@@ -14,6 +14,7 @@ public:
     int print(const char *str);
     int println(const char *str);
     int printf(const char *format, ...);
+    int vprintf(const char *fmt, va_list args);
     void print_timestamp();
 
 private:

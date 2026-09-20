@@ -3,13 +3,14 @@
 
 #include "pinout.h"
 #include "Service.h"
+#include "ServiceContext.h"
 #include "SpiEthernetPhy.h"
 
 class EthernetService : public Service
 {
 public:
     EthernetService(); // uint8_t mac[6], bool useDHCP = true, int serverPort = 23, int maxClients = 4);
-    void initialise();
+    void initialise(ServiceContext *ctx);
     void tick();
 
 private:

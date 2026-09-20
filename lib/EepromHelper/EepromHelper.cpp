@@ -1,7 +1,8 @@
 #include "EepromHelper.h"
 
-EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper) : _eeprom(eeprom)
+EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper) : _eeprom(std::move(eeprom))
 {
+    _printfBuffer = (char *)malloc(_printfBufferSize);
     _uartHelper = uartHelper;
     if (_eeprom.is_initialised())
     {
@@ -23,9 +24,9 @@ void EepromHelper::_debug_println(const char *str)
     _uartHelper->printf("[EEPROM] %s\n", str);
 }
 
-int EepromHelper::load_service_data(ServiceId serviceId, void *eepromStruct, size_t eepromStructSize, int version)
+int EepromHelper::load_service_data(ServiceId serviceId, uint8_t *eepromStruct, size_t eepromStructSize, int version)
 {
-    _debug_printf("%s requested read of %d bytes", serviceId._to_string(), eepromStructSize);
+    _debug_printf("%s requested data load of %lu bytes for version %d\n", serviceId._to_string(), eepromStructSize, version);
     return 0;
 }
 
@@ -34,6 +35,6 @@ void EepromHelper::_debug_printf(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     snprintf(_printfBuffer, _printfBufferSize, "[EEPROM] %s", fmt);
-    _uartHelper->printf(_printfBuffer, args);
+    _uartHelper->vprintf(_printfBuffer, args);
     va_end(args);
 }

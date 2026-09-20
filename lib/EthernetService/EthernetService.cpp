@@ -1,6 +1,6 @@
 #include "EthernetService.h"
 
-EthernetService::EthernetService() : Service(ServiceId::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn)
+EthernetService::EthernetService() : Service(ServiceId::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn), _eepromStruct(EthernetServiceEepromStruct())
 {
 
     // size_t mac_size = 6 * sizeof(byte);
@@ -11,12 +11,14 @@ EthernetService::EthernetService() : Service(ServiceId::ETHERNET), _phy(gpio_w55
     // _max_clients = max_clients;
 }
 
-void EthernetService::initialise()
+void EthernetService::initialise(ServiceContext *ctx)
 {
-    _server = new EthernetServer(_server_port);
-    EthernetClient _clients[_max_clients];
-    _link_up = false;
-    _debug_printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", _mac_address[0], _mac_address[1], _mac_address[2], _mac_address[3], _mac_address[4], _mac_address[5]);
+    initialise_service(ctx);
+    load_eeprom_data();
+    // _server = new EthernetServer(_server_port);
+    // EthernetClient _clients[_max_clients];
+    // _link_up = false;
+    // _debug_printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", _mac_address[0], _mac_address[1], _mac_address[2], _mac_address[3], _mac_address[4], _mac_address[5]);
     // _get_ip_address();
 }
 

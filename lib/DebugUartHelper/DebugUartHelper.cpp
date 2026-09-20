@@ -56,6 +56,13 @@ int DebugUartHelper::printf(const char *format, ...)
 #endif
 }
 
+int DebugUartHelper::vprintf(const char *fmt, va_list args)
+{
+    print_timestamp();
+    vsnprintf(_printfBuffer, _printfBufferSize, fmt, args);
+    return _uart.print(_printfBuffer);
+}
+
 void DebugUartHelper::print_timestamp()
 {
     _timeHelper->print_time(&_uart);
