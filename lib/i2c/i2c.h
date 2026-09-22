@@ -22,9 +22,9 @@ public:
     I2CDevice(I2CBus *bus, int dev_addr);
     uint8_t read8(int reg_addr, bool two_byte_address = false);
     void write8(int reg_addr, uint8_t data, bool two_byte_address = false);
-    uint16_t read16(int reg_addr, bool two_byte_address = false);
-    void write16(int reg_addr, uint16_t data, bool two_byte_address = false);
-    void write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
+    uint16_t read16(int reg_addr, bool two_byte_address = false, bool littleEndian = true);
+    void write16(int reg_addr, uint16_t data, bool two_byte_address = false, bool littleEndian = true);
+    void write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false, bool littleEndian = true);
     int read_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
 
 protected:

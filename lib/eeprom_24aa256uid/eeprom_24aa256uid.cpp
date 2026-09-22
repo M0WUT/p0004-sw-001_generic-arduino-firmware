@@ -8,30 +8,32 @@ const int EXPECTED_DEVICE_ID = 0x48;
 
 EEPROM24AA256UID::EEPROM24AA256UID(I2CBus *bus, int dev_addr) : I2CDevice(bus, dev_addr)
 {
-    _initialised = (verify_manufacturer_code() && verify_device_id());
+    _detected = (verify_manufacturer_code() && verify_device_id());
 }
 
 void EEPROM24AA256UID::read_mac_address(uint8_t mac[6])
 {
-    read_bytes(REG_MAC_ADDRESS, mac, 6, true);
+    read_bytes(REG_MAC_ADDRESS, mac, 6);
     // DEBUG_PRINTF(
     //     "Read MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n",
     //     mac[0], mac[1], mac[2],
     //     mac[3], mac[4], mac[5]);
 }
 
-void EEPROM24AA256UID::write_bytes(int regAddr, uint8_t *data, int numBytes, bool twoByteAddress)
+int EEPROM24AA256UID::write_bytes(int regAddr, uint8_t *data, int numBytes)
 {
     int startPage = regAddr / pageSizeBytes;
     int endPage = regAddr / pageSizeBytes;
+
     for (int i = startPage; i <= endPage; i++)
     {
         int pageStartAddr = i * pageSizeBytes;
-        _write_bytes(max(regAddr, pageStartAddr), data + pageSizeBytes * (i - startPage), min(numBytes, pageSizeBytes), twoByteAddress);
+        _write_bytes(max(regAddr, pageStartAddr), data + pageSizeBytes * (i - startPage), min(numBytes, pageSizeBytes), true);
     }
+    return numBytes;
 }
 
-int EEPROM24AA256UID::read_bytes(int regAddr, uint8_t *data, int numBytes, bool twoByteAddress)
+int EEPROM24AA256UID::read_bytes(int regAddr, uint8_t *data, int numBytes)
 {
     int bytesRead = 0;
     int startPage = regAddr / pageSizeBytes;
@@ -39,14 +41,14 @@ int EEPROM24AA256UID::read_bytes(int regAddr, uint8_t *data, int numBytes, bool 
     for (int i = startPage; i <= endPage; i++)
     {
         int pageStartAddr = i * pageSizeBytes;
-        bytesRead += _read_bytes(max(regAddr, pageStartAddr), data + pageSizeBytes * (i - startPage), min(numBytes, pageSizeBytes), twoByteAddress);
+        bytesRead += _read_bytes(max(regAddr, pageStartAddr), data + pageSizeBytes * (i - startPage), min(numBytes, pageSizeBytes), true);
     }
     return bytesRead;
 }
 
-bool EEPROM24AA256UID::is_initialised()
+bool EEPROM24AA256UID::is_detected()
 {
-    return _initialised;
+    return _detected;
 }
 
 bool EEPROM24AA256UID::verify_manufacturer_code()

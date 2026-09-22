@@ -6,10 +6,7 @@ DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper 
 #ifdef DEBUG
     _printfBuffer = (char *)malloc(_printfBufferSize);
     _uart.begin(UART_DEBUG_BAUD);
-    do
-    {
-        delay(1000);
-    } while (!_uart);
+    delay(2000);
     _uart.print("\n\
  ██████╗████████╗███████╗\n\
 ██╔════╝╚══██╔══╝██╔════╝\n\

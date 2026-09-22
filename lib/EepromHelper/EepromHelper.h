@@ -21,6 +21,10 @@ private:
     void _debug_print(const char *str);
     void _debug_printf(const char *fmt, ...);
     void _debug_println(const char *str);
+    int read_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
+    int write_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
+
+    uint8_t *_fakeEeprom; // Used for debugging to have the EEPROM in RAM, not used normally
 };
 
 #endif // EEPROMHELPER_H
