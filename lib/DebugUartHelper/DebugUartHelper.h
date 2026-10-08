@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "TimeHelper.h"
 #include "pinout.h"
+#include "version.h"
 
 #define DEBUG
 

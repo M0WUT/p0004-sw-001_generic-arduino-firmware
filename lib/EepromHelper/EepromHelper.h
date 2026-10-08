@@ -11,6 +11,7 @@ class EepromHelper
 public:
     EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper);
     int load_service_data(ServiceId serviceId, uint8_t *eepromStruct, size_t eepromStructSize, int version);
+    void hexdump(uint16_t start_addr, uint16_t size);
 
 private:
     EEPROM24AA256UID _eeprom;

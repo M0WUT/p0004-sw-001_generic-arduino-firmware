@@ -1,0 +1,2 @@
+#define VERSION_STRING "ad1591b_dirty"
+#define BUILD_TIMESTAMP "2026-10-08T23:05:46Z"

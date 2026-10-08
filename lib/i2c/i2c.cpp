@@ -72,7 +72,7 @@ void I2CDevice::write8(int reg_addr, uint8_t data, bool two_byte_address)
     write_bytes(reg_addr, &data, 1, two_byte_address);
 }
 
-uint16_t I2CDevice::read16(int reg_addr, bool two_byte_address, bool littleEndian = true)
+uint16_t I2CDevice::read16(int reg_addr, bool two_byte_address, bool littleEndian)
 {
     uint16_t result;
     uint8_t data[] = {0, 0};
@@ -84,7 +84,7 @@ uint16_t I2CDevice::read16(int reg_addr, bool two_byte_address, bool littleEndia
     return result;
 }
 
-void I2CDevice::write16(int reg_addr, uint16_t data, bool two_byte_address, bool littleEndian = true)
+void I2CDevice::write16(int reg_addr, uint16_t data, bool two_byte_address, bool littleEndian)
 {
     uint8_t data_buf[] = {(uint8_t)((data >> (littleEndian ? 0 : 8)) & 0xFF), (uint8_t)((data >> (littleEndian ? 8 : 0)) & 0xFF)};
     write_bytes(reg_addr, data_buf, 2, two_byte_address);

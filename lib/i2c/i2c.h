@@ -24,12 +24,17 @@ public:
     void write8(int reg_addr, uint8_t data, bool two_byte_address = false);
     uint16_t read16(int reg_addr, bool two_byte_address = false, bool littleEndian = true);
     void write16(int reg_addr, uint16_t data, bool two_byte_address = false, bool littleEndian = true);
-    void write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false, bool littleEndian = true);
+
+    // Implementation specific read and write functions that higher level code should call
+    // These should be overriden by child classes e.g. EEPROM if something more complex is required
+    void write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
     int read_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
 
 protected:
-    void _write_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
-    int _read_bytes(int reg_addr, uint8_t *data, int num_bytes, bool two_byte_address = false);
+    // Most generic devices that don't have a concept of paging will use the same functions
+    // so declared here for re-use
+    void _write_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address = false);
+    int _read_bytes(int reg_addr, uint8_t *data, int numBytes, bool two_byte_address = false);
 
 private:
     I2CBus *_bus;

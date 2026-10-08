@@ -6,21 +6,23 @@ EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper)
     _uartHelper = uartHelper;
 
 #ifdef DEBUG_EEPROM
-    _fakeEeprom = (uint8_t *)malloc(32768);
+    size_t fakeEepromSize = 32768;
+    _fakeEeprom = (uint8_t *)malloc(fakeEepromSize);
+    memset(_fakeEeprom, 0, fakeEepromSize);
     _debug_println("Using fake EEPROM");
+    hexdump(0, 24);
 #else
-    _debug_println(_eeprom.is_detected() ? "EEPROM detected" : "EEPROM not detected");
-#endif
-    struct test_t
+    if (_eeprom.is_detected())
     {
-        uint8_t x;
-        uint16_t y;
-    } test, test2;
-    test.x = 0x12;
-    test.y = 0x3456;
-    write_bytes(0, (uint8_t *)&test, sizeof(test));
-    read_bytes(0, (uint8_t *)&test2, sizeof(test2));
-    delay(10);
+        _debug_println("EEPROM detected");
+    }
+    else
+    {
+        _debug_println("Failed to detect EEPROM");
+        while (1)
+            ;
+    }
+#endif
 }
 
 void EepromHelper::_debug_print(const char *str)
@@ -39,7 +41,7 @@ int EepromHelper::read_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
     for (int i = 0; i < numBytes; i++)
     {
         data[i] = _fakeEeprom[regAddr + i];
-        _debug_printf("Read %#04x from address %#06x\n", data[i], regAddr + i);
+        // _debug_printf("Read %#04x from address %#06x\n", data[i], regAddr + i);
     }
     return numBytes;
 #else
@@ -54,7 +56,7 @@ int EepromHelper::write_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
     for (int i = 0; i < numBytes; i++)
     {
         _fakeEeprom[regAddr + i] = data[i];
-        _debug_printf("Writing %#04x to address %#06x\n", data[i], regAddr + i);
+        // _debug_printf("Writing %#04x to address %#06x\n", data[i], regAddr + i);
     }
     return numBytes;
 #else
@@ -67,6 +69,40 @@ int EepromHelper::load_service_data(ServiceId serviceId, uint8_t *eepromStruct, 
 {
     _debug_printf("%s requested data load of %lu bytes for version %d\n", serviceId._to_string(), eepromStructSize, version);
     return 0;
+}
+
+void EepromHelper::hexdump(uint16_t start_addr, uint16_t size)
+{
+    int line_length = 8;
+    uint8_t data[size];
+    this->read_bytes(start_addr, data, size);
+
+    String output = "";
+    _debug_println("EEPROM HEXDUMP: Offset(Address)");
+    char buf[32];
+    for (int i = 0; i < size; i++)
+    {
+        if (i % line_length == 0)
+        {
+            if (output != "")
+            {
+                _debug_println(output.c_str());
+            }
+            output = "";
+            snprintf(buf, sizeof(buf),
+                     "\t0x%04X (0x%04X):\t",
+                     i,
+                     start_addr + i);
+
+            output += buf;
+        }
+        snprintf(buf, sizeof(buf), "%02X\t", data[i]);
+        output += buf;
+    }
+    if (output != "")
+    {
+        _debug_println(output.c_str());
+    }
 }
 
 void EepromHelper::_debug_printf(const char *fmt, ...)

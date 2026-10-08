@@ -13,8 +13,9 @@ DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper 
 ██║  ███╗  ██║   █████╗  \n\
 ██║   ██║  ██║   ██╔══╝  \n\
 ╚██████╔╝  ██║   ███████╗\n\
- ╚═════╝   ╚═╝   ╚══════╝  By MØWUT\n\n\
+ ╚═════╝   ╚═╝   ╚══════╝  By MØWUT\n\
 ");
+    _uart.printf("Version: %s (%s)\n\n", VERSION_STRING, BUILD_TIMESTAMP);
 #endif
 }
 
