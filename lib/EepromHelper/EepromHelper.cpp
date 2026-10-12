@@ -32,7 +32,7 @@ void EepromHelper::_debug_print(const char *str)
 
 void EepromHelper::_debug_println(const char *str)
 {
-    _uartHelper->printf("[EEPROM] %s\n", str);
+    _uartHelper->printf("[EEPROM] %s\r\n", str);
 }
 
 int EepromHelper::read_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
@@ -41,7 +41,7 @@ int EepromHelper::read_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
     for (int i = 0; i < numBytes; i++)
     {
         data[i] = _fakeEeprom[regAddr + i];
-        // _debug_printf("Read %#04x from address %#06x\n", data[i], regAddr + i);
+        // _debug_printf("Read %#04x from address %#06x\r\n", data[i], regAddr + i);
     }
     return numBytes;
 #else
@@ -56,7 +56,7 @@ int EepromHelper::write_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
     for (int i = 0; i < numBytes; i++)
     {
         _fakeEeprom[regAddr + i] = data[i];
-        // _debug_printf("Writing %#04x to address %#06x\n", data[i], regAddr + i);
+        // _debug_printf("Writing %#04x to address %#06x\r\n", data[i], regAddr + i);
     }
     return numBytes;
 #else
@@ -67,7 +67,7 @@ int EepromHelper::write_bytes(uint16_t regAddr, uint8_t *data, int numBytes)
 
 int EepromHelper::load_service_data(ServiceId serviceId, uint8_t *eepromStruct, size_t eepromStructSize, int version)
 {
-    _debug_printf("%s requested data load of %lu bytes for version %d\n", serviceId._to_string(), eepromStructSize, version);
+    _debug_printf("%s requested data load of %lu bytes for version %d\r\n", serviceId._to_string(), eepromStructSize, version);
     return 0;
 }
 

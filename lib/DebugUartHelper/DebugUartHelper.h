@@ -23,6 +23,7 @@ private:
     TimeHelper *_timeHelper;
     char *_printfBuffer;
     const int _printfBufferSize = 128 * sizeof(char);
+    friend class StatusHelper;
 };
 
 #endif // DEBUGUARTHELPER_H

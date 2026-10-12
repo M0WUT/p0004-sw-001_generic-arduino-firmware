@@ -32,7 +32,7 @@ void Service::_debug_printf(const char *fmt, ...)
 
 void Service::_debug_println(const char *str)
 {
-    _ctx->debugUartHelper->printf("[%s] %s\n", _serviceId._to_string(), str);
+    _ctx->debugUartHelper->printf("[%s] %s\r\n", _serviceId._to_string(), str);
 }
 
 int Service::load_eeprom_data()

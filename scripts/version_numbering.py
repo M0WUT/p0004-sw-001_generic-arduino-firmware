@@ -45,8 +45,8 @@ def generate_version_header(env):
     output.parent.mkdir(parents=True, exist_ok=True)
 
     output.write_text(
-        f'#define VERSION_STRING "{version}"\n'
-        f'#define BUILD_TIMESTAMP "{build_timestamp}"\n',
+        f'#define VERSION_STRING "{version}"\r\n'
+        f'#define BUILD_TIMESTAMP "{build_timestamp}"\r\n',
         encoding="utf-8",
     )
 

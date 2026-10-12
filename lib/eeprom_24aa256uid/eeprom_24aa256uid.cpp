@@ -15,7 +15,7 @@ void EEPROM24AA256UID::read_mac_address(uint8_t mac[6])
 {
     read_bytes(REG_MAC_ADDRESS, mac, 6);
     // DEBUG_PRINTF(
-    //     "Read MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n",
+    //     "Read MAC address: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
     //     mac[0], mac[1], mac[2],
     //     mac[3], mac[4], mac[5]);
 }

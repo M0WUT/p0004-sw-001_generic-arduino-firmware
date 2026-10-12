@@ -7,15 +7,15 @@ DebugUartHelper::DebugUartHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper 
     _printfBuffer = (char *)malloc(_printfBufferSize);
     _uart.begin(UART_DEBUG_BAUD);
     delay(2000);
-    _uart.print("\n\
- ██████╗████████╗███████╗\n\
-██╔════╝╚══██╔══╝██╔════╝\n\
-██║  ███╗  ██║   █████╗  \n\
-██║   ██║  ██║   ██╔══╝  \n\
-╚██████╔╝  ██║   ███████╗\n\
- ╚═════╝   ╚═╝   ╚══════╝  By MØWUT\n\
+    _uart.print("\r\n\
+ ██████╗████████╗███████╗\r\n\
+██╔════╝╚══██╔══╝██╔════╝\r\n\
+██║  ███╗  ██║   █████╗  \r\n\
+██║   ██║  ██║   ██╔══╝  \r\n\
+╚██████╔╝  ██║   ███████╗\r\n\
+ ╚═════╝   ╚═╝   ╚══════╝  By MØWUT\r\n\
 ");
-    _uart.printf("Version: %s (%s)\n\n", VERSION_STRING, BUILD_TIMESTAMP);
+    _uart.printf("Version: %s (%s)\r\n\r\n", VERSION_STRING, BUILD_TIMESTAMP);
 #endif
 }
 

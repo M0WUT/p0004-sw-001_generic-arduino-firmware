@@ -11,5 +11,6 @@
 #include "EepromHelper.h"
 #include "ServiceContext.h"
 #include "ServiceTracker.h"
+#include "StatusHelper.h"
 
 #endif // INC_MAIN_H

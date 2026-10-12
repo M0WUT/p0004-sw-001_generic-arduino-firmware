@@ -18,7 +18,7 @@ void EthernetService::initialise(ServiceContext *ctx)
     // _server = new EthernetServer(_server_port);
     // EthernetClient _clients[_max_clients];
     // _link_up = false;
-    // _debug_printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", _mac_address[0], _mac_address[1], _mac_address[2], _mac_address[3], _mac_address[4], _mac_address[5]);
+    // _debug_printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\r\n", _mac_address[0], _mac_address[1], _mac_address[2], _mac_address[3], _mac_address[4], _mac_address[5]);
     // _get_ip_address();
 }
 
@@ -34,7 +34,7 @@ void EthernetService::_get_ip_address()
             _debug_println("DHCP request failed");
         }
 
-        _debug_printf("Got IP throught DHCP of %d.%d.%d.%d\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+        _debug_printf("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     }
     else
     {

@@ -149,5 +149,5 @@ void TFTHandler::set_lcd_brightness(uint8_t brightness)
     // Brightness is duty cycle in 8 bits . i.e. 0 = off, 255 = fully on.
     analogWrite(_gpioBacklight, brightness);
     // +1 ensures that 0 maps to 0 percent, 255 prints as 100% - otherwise the max it shows is 99%
-    DEBUG_PRINTF("Display backlight set to %d\%%\n", ((100 * ((uint32_t)brightness + 1)) >> 8) & 0xFF);
+    DEBUG_PRINTF("Display backlight set to %d\%%\r\n", ((100 * ((uint32_t)brightness + 1)) >> 8) & 0xFF);
 }

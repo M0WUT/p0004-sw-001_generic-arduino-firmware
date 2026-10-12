@@ -7,7 +7,7 @@ I2CBus::I2CBus(const int gpio_scl, const int gpio_sda) : _i2c(gpio_sda, gpio_scl
 
 int I2CBus::scan(int start_addr, int stop_addr, int *buf, int buf_length)
 {
-    // DEBUG_PRINTF("Scanning %s. Addresses: %d-%d\n", _to_str().c_str(), start_addr, stop_addr);
+    // DEBUG_PRINTF("Scanning %s. Addresses: %d-%d\r\n", _to_str().c_str(), start_addr, stop_addr);
 
     int num_devices = 0;
 
@@ -21,7 +21,7 @@ int I2CBus::scan(int start_addr, int stop_addr, int *buf, int buf_length)
             continue;
 
         // Device ack-ed
-        // DEBUG_PRINTF("Found device at 0x%02X\n", addr);
+        // DEBUG_PRINTF("Found device at 0x%02X\r\n", addr);
 
         // Only put as many found addresses in the buffer as it can hold
         if (num_devices < buf_length)
