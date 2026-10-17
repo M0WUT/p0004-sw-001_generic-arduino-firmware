@@ -10,7 +10,6 @@ EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper)
     _fakeEeprom = (uint8_t *)malloc(fakeEepromSize);
     memset(_fakeEeprom, 0, fakeEepromSize);
     _debug_println("Using fake EEPROM");
-    hexdump(0, 24);
 #else
     if (_eeprom.is_detected())
     {

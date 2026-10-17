@@ -129,6 +129,7 @@ void TFTHandler::create_lvgl_screen(lv_st7789_send_cmd_cb_t send_cmd_func, lv_st
     _disp = lv_st7789_create(hSize, vSize, LV_LCD_FLAG_NONE, send_cmd_func, send_colour_func);
     lv_st7789_set_gap(_disp, 0, 0x23);
     lv_st7789_set_invert(_disp, true);
+    lv_display_set_color_format(_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
     lv_display_set_rotation(_disp, _rotation);
 
     // Buffers
@@ -149,5 +150,5 @@ void TFTHandler::set_lcd_brightness(uint8_t brightness)
     // Brightness is duty cycle in 8 bits . i.e. 0 = off, 255 = fully on.
     analogWrite(_gpioBacklight, brightness);
     // +1 ensures that 0 maps to 0 percent, 255 prints as 100% - otherwise the max it shows is 99%
-    DEBUG_PRINTF("Display backlight set to %d\%%\r\n", ((100 * ((uint32_t)brightness + 1)) >> 8) & 0xFF);
+    // DEBUG_PRINTF("Display backlight set to %d\%%\r\n", ((100 * ((uint32_t)brightness + 1)) >> 8) & 0xFF);
 }

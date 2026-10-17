@@ -772,7 +772,7 @@
 #define LV_USE_EXT_DATA 0
 
 /** Use `float` instead of `int32_t` for coordinates and values that need sub-pixel precision. */
-#define LV_USE_FLOAT 0
+#define LV_USE_FLOAT 1
 
 /** Bind widgets to subject variables so they update automatically when the value changes. */
 #define LV_USE_OBSERVER 1
@@ -1004,10 +1004,10 @@
 #define LV_FONT_MONTSERRAT_8 0
 
 /** Montserrat 10 */
-#define LV_FONT_MONTSERRAT_10 0
+#define LV_FONT_MONTSERRAT_10 1
 
 /** Montserrat 12 */
-#define LV_FONT_MONTSERRAT_12 0
+#define LV_FONT_MONTSERRAT_12 1
 
 /** Montserrat 14 */
 #define LV_FONT_MONTSERRAT_14 1
@@ -1609,7 +1609,7 @@
 /** Driver for LCD devices connected via SPI or parallel port.
  *  Use it if your LCD controller is not listed among the dedicated drivers below.
  */
-#define LV_USE_GENERIC_MIPI 0
+#define LV_USE_GENERIC_MIPI 1
 
 /** ST7735
  *
@@ -1621,7 +1621,7 @@
  *
  *  Enable: LV_USE_GENERIC_MIPI
  */
-#define LV_USE_ST7789 0
+#define LV_USE_ST7789 1
 
 /** ST7796
  *
@@ -2084,7 +2084,7 @@
 /** Periodically collect CPU, FPS and memory statistics and optionally show them in an
  *  on-screen overlay.
  */
-#define LV_USE_SYSMON 0
+#define LV_USE_SYSMON 1
 
 #if LV_USE_SYSMON
 /** The port provides `lv_os_get_proc_idle_percent` a per-process idle percentage
@@ -2093,7 +2093,7 @@
 #define LV_SYSMON_PROC_IDLE_AVAILABLE 0
 
 /** Show the CPU usage and FPS count in a label on the screen. */
-#define LV_USE_PERF_MONITOR 0
+#define LV_USE_PERF_MONITOR 1
 
 #if LV_USE_PERF_MONITOR
 /** Performance monitor position

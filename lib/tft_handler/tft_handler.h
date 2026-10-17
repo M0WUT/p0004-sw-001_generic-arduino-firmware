@@ -2,7 +2,7 @@
 #define TFT_HANDLER_H
 
 #include <lvgl.h>
-#include "spi_dma/spi_dma.hpp"
+#include "spi_dma.h"
 
 class TFTHandler
 {
