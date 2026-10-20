@@ -11,7 +11,7 @@ class BaseHelper : public NamedTask
 public:
     BaseHelper(HelperContext *ctx, const String helperName);
 
-private:
+protected:
     HelperContext *_ctx;
     const String _helperName;
     LoggingHelper *_getLoggingHelper();

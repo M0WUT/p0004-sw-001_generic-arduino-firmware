@@ -1,6 +1,6 @@
 #include "EepromHelper.h"
 
-EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, HelperContext *ctx) : _eeprom(std::move(eeprom)), BaseHelper(_ctx, "EEPROM")
+EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, HelperContext *ctx) : BaseHelper(_ctx, "EEPROM"), _eeprom(std::move(eeprom))
 {
 
 #ifdef DEBUG_EEPROM

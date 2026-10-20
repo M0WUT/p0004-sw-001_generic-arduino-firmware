@@ -16,8 +16,6 @@ public:
 
 private:
     EEPROM24AA256UID _eeprom;
-    HelperContext *_ctx;
-
     int read_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
     int write_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
 #ifdef DEBUG_EEPROM

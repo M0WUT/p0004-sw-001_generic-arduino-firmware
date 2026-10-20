@@ -1,16 +1,16 @@
 #include "ServiceTracker.h"
 
-ServiceTracker::ServiceTracker(Service *extraServiceList, size_t len)
+ServiceTracker::ServiceTracker(BaseService *extraServiceList, size_t len)
 {
     // This list of pointers will get destroyed after this function
     // But the pointers are still valid as the objects will still exist
-    Service *defaultServiceList[] = {(Service *)&_ethernetService};
+    BaseService *defaultServiceList[] = {(BaseService *)&_ethernetService};
     //{&_coreService, &_powerService, &_thermalService, &_lcdService, &_ethernetService};
 
     int numDefaultServices = sizeof(defaultServiceList) / sizeof(defaultServiceList[0]);
     _numServices = len + numDefaultServices;
 
-    _serviceList = (Service **)malloc((sizeof(Service *) * _numServices));
+    _serviceList = (BaseService **)malloc((sizeof(BaseService *) * _numServices));
 
     for (int i = 0; i < numDefaultServices; i++)
     {

@@ -2,8 +2,8 @@
 #define SERVICECONTEXT_H
 
 #include "TimeHelper.h"
-#include "EepromHelper.h"
 #include "LoggingHelper.h"
+#include "EepromHelper.h"
 
 struct ServiceContext
 {
