@@ -33,14 +33,6 @@ void LoggingHelper::error(const char *serviceName, const char *errorStr)
     }
 }
 
-void LoggingHelper::errorf(const char *serviceName, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    snprintf(_printBuffer, DEBUG_UART_BUFFER_SIZE, fmt, args);
-    error(serviceName, _printBuffer);
-}
-
 int LoggingHelper::warning(const char *serviceName, const char *warningStr)
 {
     int warningId = _getWarningId();
@@ -54,38 +46,14 @@ int LoggingHelper::warning(const char *serviceName, const char *warningStr)
     return warningId;
 }
 
-int LoggingHelper::warningf(const char *serviceName, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    snprintf(_printBuffer, DEBUG_UART_BUFFER_SIZE, fmt, args);
-    return warning(serviceName, _printBuffer);
-}
-
 void LoggingHelper::info(const char *serviceName, const char *infoStr)
 {
     _printStatusMessage(serviceName, infoStr, LoggingLevel::INFO);
 }
 
-void LoggingHelper::infof(const char *serviceName, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    snprintf(_printBuffer, DEBUG_UART_BUFFER_SIZE, fmt, args);
-    info(serviceName, _printBuffer);
-}
-
 void LoggingHelper::debug(const char *serviceName, const char *debugStr)
 {
     _printStatusMessage(serviceName, debugStr, LoggingLevel::DEBUG);
-}
-
-void LoggingHelper::debugf(const char *serviceName, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    snprintf(_printBuffer, DEBUG_UART_BUFFER_SIZE, fmt, args);
-    debug(serviceName, _printBuffer);
 }
 
 void LoggingHelper::clear_warning(int warningId)

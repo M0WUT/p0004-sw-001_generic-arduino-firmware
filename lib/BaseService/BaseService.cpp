@@ -1,4 +1,5 @@
 #include "BaseService.h"
+#include "EepromHelper.h"
 
 BaseService::BaseService(ServiceId serviceId) : _serviceId(serviceId)
 {

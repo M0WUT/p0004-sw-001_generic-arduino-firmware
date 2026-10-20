@@ -48,14 +48,10 @@ class LoggingHelper
 public:
     LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper, int gpioLedRed, int gpioLedGreen, int gpioLedBlue, LoggingLevel loggingLevel);
     void error(const char *serviceName, const char *errorStr);
-    void errorf(const char *serviceName, const char *fmt, ...);
     // Returns unique id of the warning so it can be cleared later
     int warning(const char *serviceName, const char *warningStr);
-    int warningf(const char *serviceName, const char *fmt, ...);
     void info(const char *serviceName, const char *infoStr);
-    void infof(const char *serviceName, const char *fmt, ...);
     void debug(const char *serviceName, const char *debugStr);
-    void debugf(const char *serviceName, const char *fmt, ...);
     void clear_warning(int warningId);
 
 private:
