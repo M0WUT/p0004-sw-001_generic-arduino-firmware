@@ -1,16 +1,19 @@
-#ifndef SERVICE_H
-#define SERVICE_H
+#ifndef BASESERVICE_H
+#define BASESERVICE_H
 
 #include <Arduino.h>
 #include <variant>
 #include "ServiceId.h"
 #include "ServiceContext.h"
 #include "EepromStruct.h"
+#include "NamedTask.h"
 
-class Service
+constexpr int SERVICE_PRINT_BUFFER_SIZE = 128 * sizeof(char);
+
+class BaseService : public NamedTask
 {
 public:
-    Service(ServiceId serviceId);
+    BaseService(ServiceId serviceId);
     virtual void initialise(ServiceContext *ctx) = 0;
     virtual void tick();
 
@@ -18,15 +21,12 @@ protected:
     ServiceId _serviceId;
     ServiceContext *_ctx;
     void initialise_service(ServiceContext *ctx);
-    void _debug_print(const char *str);
-    void _debug_printf(const char *fmt, ...);
-    void _debug_println(const char *str);
     EepromStruct _eepromStruct;
     int load_eeprom_data();
 
 private:
-    char *_printfBuffer;
-    const int _printfBufferSize = 128 * sizeof(char);
+    LoggingHelper *_getLoggingHelper();
+    const char *_getName();
 };
 
-#endif // SERVICE_H
+#endif // BASESERVICE_H

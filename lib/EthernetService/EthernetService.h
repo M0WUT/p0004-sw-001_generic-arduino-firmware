@@ -2,11 +2,11 @@
 #define ETHERNETSERVICE_H
 
 #include "pinout.h"
-#include "Service.h"
+#include "BaseService.h"
 #include "ServiceContext.h"
 #include "SpiEthernetPhy.h"
 
-class EthernetService : public Service
+class EthernetService : public BaseService
 {
 public:
     EthernetService(); // uint8_t mac[6], bool useDHCP = true, int serverPort = 23, int maxClients = 4);

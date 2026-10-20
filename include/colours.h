@@ -3,7 +3,7 @@
 
 #include <lvgl.h>
 
-#define M0WUT_DEFAULT_BACKGROUND lv_color_hex(0x0000FF)
+#define M0WUT_DEFAULT_BACKGROUND lv_color_hex(0x080808)
 #define M0WUT_DEFAULT_FOREGROUND lv_color_hex(0xe1970c)
 
 const lv_color_t m0wut_channel_colours[] = {

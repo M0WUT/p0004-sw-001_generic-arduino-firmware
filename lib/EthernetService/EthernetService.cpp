@@ -1,6 +1,6 @@
 #include "EthernetService.h"
 
-EthernetService::EthernetService() : Service(ServiceId::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn), _eepromStruct(EthernetServiceEepromStruct())
+EthernetService::EthernetService() : BaseService(ServiceId::ETHERNET), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn), _eepromStruct(EthernetServiceEepromStruct())
 {
 
     // size_t mac_size = 6 * sizeof(byte);
@@ -26,15 +26,15 @@ void EthernetService::_get_ip_address()
 {
     if (_use_dhcp)
     {
-        _debug_println("Attempting to get IP address over DHCP");
+        _info("Attempting to get IP address over DHCP");
         // This returns 1 on successful connection, 0 if connection failed
         while (Ethernet.begin(_mac_address) != 1)
         {
             delay(500);
-            _debug_println("DHCP request failed");
+            _info("DHCP request failed");
         }
 
-        _debug_printf("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+        _infof("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     }
     else
     {
@@ -44,10 +44,10 @@ void EthernetService::_get_ip_address()
         ;
     }
 
-    _debug_println("Starting server...");
+    _info("Starting server...");
     _server->begin();
     delay(1000);
-    _debug_println("Server started.");
+    _info("Server started.");
 }
 
 void EthernetService::_update_link_state()
@@ -56,7 +56,7 @@ void EthernetService::_update_link_state()
     {
         if (Ethernet.linkStatus() == LinkON)
         {
-            _debug_println("Ethernet connected");
+            _info("Ethernet connected");
             _get_ip_address();
             _link_up = 1;
         }
@@ -66,7 +66,7 @@ void EthernetService::_update_link_state()
         if (Ethernet.linkStatus() == LinkOFF)
         {
             _link_up = 0;
-            _debug_println("Ethernet disconnected");
+            _info("Ethernet disconnected");
         }
         else
         {

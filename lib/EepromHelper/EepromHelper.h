@@ -2,30 +2,27 @@
 #define EEPROMHELPER_H
 
 #include "eeprom_24aa256uid.h"
-#include "DebugUartHelper.h"
 #include "ServiceId.h"
 #include "EepromStruct.h"
+#include "HelperContext.h"
+#include "BaseHelper.h"
 
-class EepromHelper
+class EepromHelper : public BaseHelper
 {
 public:
-    EepromHelper(EEPROM24AA256UID eeprom, DebugUartHelper *uartHelper);
+    EepromHelper(EEPROM24AA256UID eeprom, HelperContext *ctx);
     int load_service_data(ServiceId serviceId, uint8_t *eepromStruct, size_t eepromStructSize, int version);
     void hexdump(uint16_t start_addr, uint16_t size);
 
 private:
     EEPROM24AA256UID _eeprom;
-    DebugUartHelper *_uartHelper;
-    char *_printfBuffer;
-    const int _printfBufferSize = 128 * sizeof(char);
-    void _debug_print_header();
-    void _debug_print(const char *str);
-    void _debug_printf(const char *fmt, ...);
-    void _debug_println(const char *str);
+    HelperContext *_ctx;
+
     int read_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
     int write_bytes(uint16_t regAddr, uint8_t *data, int numBytes);
-
+#ifdef DEBUG_EEPROM
     uint8_t *_fakeEeprom; // Used for debugging to have the EEPROM in RAM, not used normally
+#endif
 };
 
 #endif // EEPROMHELPER_H

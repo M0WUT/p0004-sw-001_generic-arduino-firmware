@@ -2,16 +2,14 @@
 #define SERVICECONTEXT_H
 
 #include "TimeHelper.h"
-#include "DebugUartHelper.h"
 #include "EepromHelper.h"
-#include "StatusHelper.h"
+#include "LoggingHelper.h"
 
 struct ServiceContext
 {
     TimeHelper *timeHelper;
-    DebugUartHelper *debugUartHelper;
+    LoggingHelper *loggingHelper;
     EepromHelper *eepromHelper;
-    StatusHelper *statusHelper;
 };
 
 #endif // SERVICECONTEXT_H
