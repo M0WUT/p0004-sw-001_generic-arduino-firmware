@@ -1,15 +1,11 @@
-#include "BaseService.h"
+#include "Service.h"
 #include "EepromHelper.h"
 
-BaseService::BaseService(ServiceId serviceId) : _serviceId(serviceId)
-{
-    ;
-}
-
-void BaseService::initialise_service(ServiceContext *ctx)
+void BaseService::initialise(ServiceContext *ctx)
 {
     _ctx = ctx;
     _info("Initialising...");
+    _load_eeprom_data();
 }
 
 LoggingHelper *BaseService::_getLoggingHelper()
@@ -27,8 +23,9 @@ void BaseService::tick()
     _debug("Tick");
 }
 
-int BaseService::load_eeprom_data()
+int BaseService::_load_eeprom_data()
 {
-    _ctx->eepromHelper->load_service_data(_serviceId, NULL, 4, 1);
+    ConfigData *config = _getConfig();
+    _ctx->eepromHelper->read_service_config(_serviceId, config, config->size(), config->version);
     return 0;
 }

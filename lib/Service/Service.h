@@ -1,0 +1,37 @@
+#ifndef SERVICE_H
+#define SERVICE_H
+
+#include <Arduino.h>
+#include <variant>
+#include "ServiceId.h"
+#include "ServiceContext.h"
+#include "ConfigData.h"
+#include "NamedTask.h"
+
+class BaseService : public NamedTask
+{
+public:
+    BaseService(ServiceId serviceId) : _serviceId(serviceId) {}
+    void initialise(ServiceContext *ctx);
+    virtual void tick();
+
+protected:
+    ServiceId _serviceId;
+    ServiceContext *_ctx;
+    virtual ConfigData *_getConfig() = 0;
+    int _load_eeprom_data();
+
+private:
+    LoggingHelper *_getLoggingHelper();
+    const char *_getName();
+};
+
+template <typename TConfig>
+class Service : public BaseService
+{
+public:
+    Service(ServiceId serviceId, TConfig config) : BaseService(serviceId), _config(config) {}
+    TConfig _config;
+};
+
+#endif // SERVICE_H

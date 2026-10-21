@@ -123,4 +123,5 @@ void LoggingHelper::_printStatusMessage(const char *serviceName, const char *mes
     {
         _uart.print("\x1b[0m");
     }
+    _uart.flush();
 }

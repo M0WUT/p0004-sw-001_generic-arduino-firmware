@@ -1,7 +1,7 @@
 #ifndef SERVICETRACKER_H
 #define SERVICETRACKER_H
 
-#include "BaseService.h"
+#include "Service.h"
 #include "ServiceContext.h"
 #include "EthernetService.h"
 

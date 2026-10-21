@@ -9,4 +9,6 @@
 // 256 services, this has gone much better (or worse!) than planned
 BETTER_ENUM(ServiceId, uint8_t, CORE = 0, POWER, THERMAL, LCD, ETHERNET, USB_HOST, USB_DEVICE, SD_CARD, UI, SCPI, HOME_ASSISTANT, APPLICATION)
 
+constexpr size_t NUM_KNOWN_SERVICES = ServiceId::_size();
+
 #endif // SERVICEID_H

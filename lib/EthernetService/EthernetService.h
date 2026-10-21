@@ -2,30 +2,25 @@
 #define ETHERNETSERVICE_H
 
 #include "pinout.h"
-#include "BaseService.h"
+#include "Service.h"
 #include "ServiceContext.h"
 #include "SpiEthernetPhy.h"
 
-class EthernetService : public BaseService
+class EthernetService : public Service<EthernetServiceConfig>
 {
 public:
     EthernetService(); // uint8_t mac[6], bool useDHCP = true, int serverPort = 23, int maxClients = 4);
-    void initialise(ServiceContext *ctx);
     void tick();
 
 private:
     SpiEthernetPhy _phy;
-    bool _use_dhcp;
-    int _max_clients;
-    int _server_port;
     EthernetServer *_server;
     EthernetClient *_clients;
     bool _link_up = 0;
-    uint8_t *_mac_address;
-    EthernetServiceEepromStruct _eepromStruct;
 
     void _get_ip_address();
     void _update_link_state();
+    ConfigData *_getConfig() { return &_config; }
 };
 
 #endif // ETHERNETSERVICE_H
