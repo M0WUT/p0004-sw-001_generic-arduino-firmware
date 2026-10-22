@@ -5,7 +5,14 @@ void BaseService::initialise(ServiceContext *ctx)
 {
     _ctx = ctx;
     _info("Initialising...");
-    _load_eeprom_data();
+    if (!_load_eeprom_config())
+    {
+        // Data read failed. If this hasn't errored, probably that EEPROM is unitialised
+        _info("Creating default config");
+        _generate_default_config();
+        ConfigData *config = _getConfig();
+        _ctx->eepromHelper->write_service_config(_serviceId, config, config->size(), config->version);
+    }
 }
 
 LoggingHelper *BaseService::_getLoggingHelper()
@@ -23,7 +30,7 @@ void BaseService::tick()
     _debug("Tick");
 }
 
-int BaseService::_load_eeprom_data()
+bool BaseService::_load_eeprom_config()
 {
     ConfigData *config = _getConfig();
     _ctx->eepromHelper->read_service_config(_serviceId, config, config->size(), config->version);

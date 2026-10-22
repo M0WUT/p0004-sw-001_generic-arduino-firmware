@@ -57,6 +57,17 @@ void EthernetService::_update_link_state()
     }
 }
 
+void EthernetService::_generate_default_config()
+{
+    _config.data.useDhcp = true;
+    for (int i = 0; i < 4; i++)
+    {
+        _config.data.staticIpAddress[i] = 0;
+    }
+    _config.data.serverPort = 80;
+    _config.data.maxClients = 4;
+}
+
 void EthernetService::tick()
 {
     _update_link_state();

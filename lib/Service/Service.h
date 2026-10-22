@@ -19,7 +19,8 @@ protected:
     ServiceId _serviceId;
     ServiceContext *_ctx;
     virtual ConfigData *_getConfig() = 0;
-    int _load_eeprom_data();
+    bool _load_eeprom_config();
+    virtual void _generate_default_config() = 0;
 
 private:
     LoggingHelper *_getLoggingHelper();

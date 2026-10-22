@@ -21,6 +21,7 @@ private:
     void _get_ip_address();
     void _update_link_state();
     ConfigData *_getConfig() { return &_config; }
+    void _generate_default_config();
 };
 
 #endif // ETHERNETSERVICE_H

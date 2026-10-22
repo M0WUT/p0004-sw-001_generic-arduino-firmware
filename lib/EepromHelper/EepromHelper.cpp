@@ -24,7 +24,7 @@ EepromHelper::EepromHelper(EEPROM24AA256UID eeprom, HelperContext *ctx) : BaseHe
     {
         initialise_eeprom();
     }
-    read_eat_table();
+    _read_cat_table();
 }
 
 int EepromHelper::read_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8 *crc)
@@ -67,6 +67,33 @@ int EepromHelper::write_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC
     return numBytesWritten;
 }
 
+uint8_t EepromHelper::read8(uint16_t regAddr)
+{
+    uint8_t data;
+    read_bytes(regAddr, &data, 1);
+    return data;
+}
+
+void EepromHelper::write8(uint16_t regAddr, uint8_t data)
+{
+    write_bytes(regAddr, &data, 1);
+}
+
+uint8_t EepromHelper::read16(uint16_t regAddr)
+{
+    uint8_t data[2];
+    read_bytes(regAddr, data, 2);
+    return (uint16_t)data[1] << 8 | (uint16_t)data[0];
+}
+
+void EepromHelper::write16(uint16_t regAddr, uint16_t data)
+{
+    uint8_t buffer[2];
+    buffer[0] = data & 0xFF;
+    buffer[1] = (data >> 8) & 0xFF;
+    write_bytes(regAddr, buffer, 2);
+}
+
 bool EepromHelper::_eeprom_initialised()
 {
     // The data in _initValues is expected to be at the start of the EEPROM if it has been initialised
@@ -98,11 +125,11 @@ void EepromHelper::initialise_eeprom()
     uint8_t knownServices = NUM_KNOWN_SERVICES;
     write_bytes(eepromAddress++, &knownServices, 1, &crc);
     // Populate entries
-    uint16_t eatTable[NUM_KNOWN_SERVICES];
-    size_t eatTableSize = sizeof(eatTable);
-    memset(eatTable, 0xFF, eatTableSize);
-    write_bytes(eepromAddress, (uint8_t *)eatTable, eatTableSize, &crc);
-    eepromAddress += eatTableSize;
+    uint16_t catTable[NUM_KNOWN_SERVICES];
+    size_t catTableSize = sizeof(catTable);
+    memset(catTable, 0xFF, catTableSize);
+    write_bytes(eepromAddress, (uint8_t *)catTable, catTableSize, &crc);
+    eepromAddress += catTableSize;
 
     // Readback all data
     uint8_t readbackData[eepromAddress];
@@ -117,21 +144,24 @@ void EepromHelper::initialise_eeprom()
         _error("Initialisation readback failed");
     }
 
-    // Write CRC
-    write_bytes(eepromAddress, &expectedCrc, 1);
-    uint8_t eepromCrc;
-    read_bytes(eepromAddress++, &eepromCrc, 1);
-    if (eepromCrc != expectedCrc)
+    // Write CRC and verify
+    write8(eepromAddress, expectedCrc);
+    if (read8(eepromAddress) != expectedCrc)
     {
-        hexdump(0, eepromAddress);
+        hexdump(0, ++eepromAddress);
         _error("Failed to write CRC");
     }
 }
 
-void EepromHelper::read_eat_table()
+void EepromHelper::_read_cat_table()
 {
     read_bytes(1 + sizeof(_initValues), (uint8_t *)&_serviceBaseAddresses, sizeof(_serviceBaseAddresses));
-    _info("EAT Table:");
+    _print_cat_table();
+}
+
+void EepromHelper::_print_cat_table()
+{
+    _info("CAT Table:");
     for (int i = 0; i < NUM_KNOWN_SERVICES; i++)
     {
         unsigned int serviceBaseAddress = static_cast<unsigned int>(_serviceBaseAddresses[i]);
@@ -139,10 +169,43 @@ void EepromHelper::read_eat_table()
     }
 }
 
-int EepromHelper::read_service_config(ServiceId serviceId, void *eepromStruct, size_t eepromStructSize, int version)
+uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSize)
 {
-    _debugf("%s requested data load of %lu bytes for version %d\r\n", serviceId._to_string(), eepromStructSize, version);
+    // Shuffles all the data around to add the config in the correct order in memory and
+    // updates the CAT.Returns the base address of the newly created config entry
+
+    // Reason for shuffling is that it saves fragmentation (config will always be sorted and tightly packed)
+    // and config updates are likely to be rare events
     return 0;
+}
+
+uint16_t EepromHelper::_get_config_base_address(ServiceId serviceId)
+{
+    return _serviceBaseAddresses[serviceId._to_integral()];
+}
+
+bool EepromHelper::read_service_config(ServiceId serviceId, void *config, size_t configSize, int version)
+{
+    _debugf("%s requested data load of %lu bytes for version %d", serviceId._to_string(), configSize, version);
+    uint16_t configBaseAddress = _get_config_base_address(serviceId);
+    if (configBaseAddress == 0xFFFF)
+    {
+        // No entry exists
+        _warningf("No valid config data found for %s", serviceId._to_string());
+        return false;
+    }
+    return false; // @TODO actually read data if entry does exist
+}
+
+int EepromHelper::write_service_config(ServiceId serviceId, void *config, size_t configSize, int version)
+{
+    _debugf("%s requested to write of %lu bytes for version %d", serviceId._to_string(), configSize, version);
+    uint16_t configBaseAddress = _get_config_base_address(serviceId);
+    if (configBaseAddress == 0xFFFF)
+    {
+        // No entry exists
+        configBaseAddress = _allocate_new_config(serviceId, configSize);
+    }
 }
 
 void EepromHelper::hexdump(uint16_t start_addr, uint16_t size)
