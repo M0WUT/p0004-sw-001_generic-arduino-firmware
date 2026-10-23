@@ -21,6 +21,7 @@ protected:
     virtual ConfigData *_getConfig() = 0;
     bool _load_eeprom_config();
     virtual void _generate_default_config() = 0;
+    virtual void _print_config() = 0;
 
 private:
     LoggingHelper *_getLoggingHelper();

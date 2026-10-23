@@ -66,6 +66,14 @@ void EthernetService::_generate_default_config()
     }
     _config.data.serverPort = 80;
     _config.data.maxClients = 4;
+    _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
+}
+
+void EthernetService::_print_config()
+{
+    _info("Config:");
+    _infof("\tMAC Address: %02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
+    _infof("\tUse DHCP: %s", _config.data.useDhcp ? "Yes" : "No");
 }
 
 void EthernetService::tick()

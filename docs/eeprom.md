@@ -59,11 +59,11 @@ In the following example, the config data is assumed to be N bytes long.
 
 | Relative Address | Name | Value | Description | Include in length calculation? |Include in CRC calculation? |
 |---|---|---|---|---|---|
-| `0x00` | `CONFIG_VERSION` | `1` | Version of config struct saved. Any change in struture requires the version to be incremented | Y | Y |
-| `0x01` | `CONFIG_LENGTH[0]` | `LSB of <N+4>` | Length of config (LSB) | Y | Y |
-| `0x02` | `CONFIG_LENGTH[1]` | `MSB of <N+4>` | Length of config (MSB) | Y | Y |
+| `0x00` | `CONFIG_LENGTH[0]` | `LSB of <N+4>` | Length of config (LSB) | Y | Y |
+| `0x01` | `CONFIG_LENGTH[1]` | `MSB of <N+4>` | Length of config (MSB) | Y | Y |
+| `0x02` | `CONFIG_VERSION` | `1` | Version of config struct saved. Any change in struture requires the version to be incremented | Y | Y |
 | `0x03` | `CONFIG_DATA[0]` | `?` | First byte of config data | Y | Y |
-| ... | ... | ... | ... | Y |  Y |
+| ⋮ | `CONFIG_DATA[x]` | ⋮ | ⋮ | Y |  Y |
 | `N+2` |  `CONFIG_DATA[N-1]` | `?` | Last byte of config data | Y | Y |
 | `N+3` | `CONFIG_CRC` | ? | CRC8 | Y | N |
 

@@ -9,7 +9,7 @@
 class EthernetService : public Service<EthernetServiceConfig>
 {
 public:
-    EthernetService(); // uint8_t mac[6], bool useDHCP = true, int serverPort = 23, int maxClients = 4);
+    EthernetService();
     void tick();
 
 private:
@@ -22,6 +22,7 @@ private:
     void _update_link_state();
     ConfigData *_getConfig() { return &_config; }
     void _generate_default_config();
+    void _print_config();
 };
 
 #endif // ETHERNETSERVICE_H

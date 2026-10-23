@@ -12,7 +12,12 @@ void BaseService::initialise(ServiceContext *ctx)
         _generate_default_config();
         ConfigData *config = _getConfig();
         _ctx->eepromHelper->write_service_config(_serviceId, config, config->size(), config->version);
+
+        // Once written load back - may seem unneccessary but ensures data matches and routines that
+        // apply configuration can be called from a single place
+        _load_eeprom_config();
     }
+    _print_config();
 }
 
 LoggingHelper *BaseService::_getLoggingHelper()
