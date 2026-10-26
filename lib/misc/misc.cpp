@@ -1,6 +1,6 @@
 #include "misc.h"
 
-String spi_controller_name(SPIClass *pspi)
+const char *spi_controller_name(SPIClass *pspi)
 {
 
     SPI_TypeDef *x = pspi->getHandle()->Instance;

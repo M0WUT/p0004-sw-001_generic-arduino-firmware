@@ -1,7 +1,7 @@
-#include "Service.h"
+#include "BaseService.h"
 #include "EepromHelper.h"
 
-void BaseService::initialise(ServiceContext *ctx)
+void BaseService::_initialise(ServiceContext *ctx)
 {
     _ctx = ctx;
     _info("Initialising...");

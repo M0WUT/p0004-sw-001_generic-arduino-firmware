@@ -53,7 +53,7 @@ The next byte contains how many entries exist in the CAT. Each config is a two-b
 
 ## Config
 Note addresses are given as offsets to the config base address as that can vary.
-CONFIG_LENGTH is 16 bits as a single entry may exceed 255 bytes. It should include bytes used for CONFIUG_VERSION, CONFIG_LENGTH and CONFIG_CRC i.e. be 4 larger than the size of the config itself.
+CONFIG_LENGTH is 16 bits as a single entry may exceed 255 bytes. It should include bytes used for CONFIG_VERSION, CONFIG_LENGTH and CONFIG_CRC i.e. be 4 larger than the size of the config itself.
 
 In the following example, the config data is assumed to be N bytes long.
 

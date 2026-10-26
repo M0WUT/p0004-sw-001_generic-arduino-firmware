@@ -12,12 +12,14 @@ class BaseService : public NamedTask
 {
 public:
     BaseService(ServiceId serviceId) : _serviceId(serviceId) {}
-    void initialise(ServiceContext *ctx);
+    virtual void initialise(ServiceContext *ctx) = 0;
     virtual void tick();
 
 protected:
     ServiceId _serviceId;
     ServiceContext *_ctx;
+
+    void _initialise(ServiceContext *ctx);
     virtual ConfigData *_getConfig() = 0;
     bool _load_eeprom_config();
     virtual void _generate_default_config() = 0;

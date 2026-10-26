@@ -247,7 +247,7 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
     for (int i = ServiceId::_size() - 1; i > serviceId._to_index(); i--)
     {
         ServiceId tmpServiceID = ServiceId::_values()[i];
-        _debugf("Checking %s", tmpServiceID._to_string());
+        // _debugf("Checking %s", tmpServiceID._to_string());
         uint16_t tmpBaseAddress = _get_config_base_address(tmpServiceID);
         if (tmpBaseAddress == UNINITIALISED_CONFIG_BASE_ADDRESS)
         {
@@ -288,7 +288,7 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
         for (int i = 0; i < serviceId._to_index(); i++)
         {
             ServiceId tmpServiceID = ServiceId::_values()[i];
-            _debugf("Checking %s", tmpServiceID._to_string());
+            // _debugf("Checking %s", tmpServiceID._to_string());
             uint16_t tmpBaseAddress = _get_config_base_address(tmpServiceID);
             if (tmpBaseAddress != UNINITIALISED_CONFIG_BASE_ADDRESS)
             {
@@ -312,6 +312,12 @@ uint16_t EepromHelper::_get_config_base_address(ServiceId serviceId)
     return _serviceBaseAddresses[serviceId._to_integral()];
 }
 
+uint16_t EepromHelper::_get_config_data_base_address(ServiceId serviceId)
+{
+    // 2 lengths bytes + 1 version byte
+    return _get_config_base_address(serviceId) + 3;
+}
+
 uint16_t EepromHelper::_get_config_size(ServiceId serviceId)
 {
     uint16_t baseAddress = _get_config_base_address(serviceId);
@@ -322,9 +328,17 @@ uint16_t EepromHelper::_get_config_size(ServiceId serviceId)
     return read16(baseAddress);
 }
 
+uint8_t EepromHelper::_get_config_crc(ServiceId serviceId)
+{
+    // CRC is last byte of record
+    uint16_t baseAddress = _get_config_base_address(serviceId);
+    uint16_t configSize = _get_config_size(serviceId);
+    return read8(baseAddress + configSize - 1);
+}
+
 bool EepromHelper::read_service_config(ServiceId serviceId, void *config, size_t configDataSize, uint8_t version)
 {
-    _debugf("%s requested config data load of (%lu config data bytes, version %d)", serviceId._to_string(), configDataSize, version);
+    _debugf("%s requested config data load of %lu config data bytes (version %d)", serviceId._to_string(), configDataSize, version);
     uint16_t configBaseAddress = _get_config_base_address(serviceId);
     if (configBaseAddress == UNINITIALISED_CONFIG_BASE_ADDRESS)
     {
@@ -346,12 +360,24 @@ bool EepromHelper::read_service_config(ServiceId serviceId, void *config, size_t
         _errorf("Config version mismatch for %s. Code expected version %d, EEPROM contains version %d", serviceId._to_string(), version, eepromConfigVersion);
     }
 
-    return false; // @TODO actually read data if entry does exist
+    CRC8 crc = _get_crc();
+
+    // Length and version fields are part of the CRC so also need to read those, even though they're not
+    // part of the wanted data
+    uint8_t buffer[3];
+    read_bytes(_get_config_base_address(serviceId), buffer, 3, &crc);
+
+    read_bytes(_get_config_data_base_address(serviceId), (uint8_t *)config, configDataSize, &crc);
+    if (_get_config_crc(serviceId) != crc.calc())
+    {
+        _errorf("Readback data has incorrect CRC");
+    }
+    return true;
 }
 
 void EepromHelper::write_service_config(ServiceId serviceId, void *configData, size_t configDataSize, uint8_t version)
 {
-    _debugf("%s requested config data write (%lu config data bytes, version %d)", serviceId._to_string(), configDataSize, version);
+    _debugf("%s requested config data write of %lu config data bytes (version %d)", serviceId._to_string(), configDataSize, version);
     uint16_t configBaseAddress = _get_config_base_address(serviceId);
     uint16_t configSize = configDataSize + _configDataSizeToConfigSizeOffset;
     if (configBaseAddress == UNINITIALISED_CONFIG_BASE_ADDRESS)

@@ -24,17 +24,17 @@ ServiceContext serviceContext = {
 
 void setup()
 {
-  tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
-  disp = tft->get_lvgl_display();
-  main_scr = create_home_screen();
-  lv_screen_load(main_scr);
-  // Allow for all of the data on the LCD to be updated before we enable the backlight
-  // Just looks bad if we see garbage on the screen
-  for (int i = 0; i < 20; i++)
-  {
-    lv_task_handler();
-  }
-  tft->set_lcd_brightness(255);
+  // tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
+  // disp = tft->get_lvgl_display();
+  // main_scr = create_home_screen();
+  // lv_screen_load(main_scr);
+  // // Allow for all of the data on the LCD to be updated before we enable the backlight
+  // // Just looks bad if we see garbage on the screen
+  // for (int i = 0; i < 20; i++)
+  // {
+  //   lv_task_handler();
+  // }
+  // tft->set_lcd_brightness(255);
 
   serviceTracker = new ServiceTracker(NULL, 0);
   serviceTracker->initialiseServices(&serviceContext);
@@ -42,6 +42,6 @@ void setup()
 
 void loop()
 {
-  lv_task_handler();
+  // lv_task_handler();
   delay(5);
 }

@@ -20,7 +20,7 @@ constexpr int gpio_tft_sclk = PE2;
 constexpr int TFT_PWM_FREQUENCY = 25000;
 
 // W5500 (Ethernet PHY)
-constexpr int gpio_w5500_cs = PB9;
+constexpr int gpio_w5500_csn = PB9;
 constexpr int gpio_w5500_miso = PC2_C;
 constexpr int gpio_w5500_mosi = PC1;
 constexpr int gpio_w5500_sclk = PB13;

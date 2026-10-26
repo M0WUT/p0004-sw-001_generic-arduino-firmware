@@ -40,7 +40,9 @@ private:
     bool _verify_cat_crc();
     uint16_t _allocate_new_config(ServiceId serviceId, size_t configSize);
     uint16_t _get_config_base_address(ServiceId serviceId);
+    uint16_t _get_config_data_base_address(ServiceId serviceId);
     uint16_t _get_config_size(ServiceId serviceId);
+    uint8_t _get_config_crc(ServiceId serviceId);
     uint16_t _serviceBaseAddresses[NUM_KNOWN_SERVICES];
     const char _initValues[3] = {'L', 'I', 'D'};
     const int _configDataSizeToConfigSizeOffset = 4;

@@ -20,20 +20,4 @@ public:
     T data;
 };
 
-struct EthernetServiceConfigData
-{
-    uint8_t macAddress[6];
-    bool useDhcp;
-    uint8_t staticIpAddress[4];
-    uint8_t serverPort;
-    uint8_t maxClients;
-};
-
-class EthernetServiceConfig : public ConfigTemplate<EthernetServiceConfigData>
-{
-public:
-    EthernetServiceConfig() : ConfigTemplate<EthernetServiceConfigData>(1, {}) {}
-    size_t size() { return sizeof(EthernetServiceConfigData); }
-};
-
 #endif // CONFIGDATA_H

@@ -1,6 +1,6 @@
 #include "LoggingHelper.h"
 
-LoggingHelper::LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper, int gpioLedRed, int gpioLedGreen, int gpioLedBlue, LoggingLevel loggingLevel) : _uart(gpio_uart_rx, gpio_uart_tx)
+LoggingHelper::LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper, int gpioLedRed, int gpioLedGreen, int gpioLedBlue, LoggingLevel loggingLevel) : _uart(gpio_uart_rx, gpio_uart_tx), _timeHelper(timeHelper), _gpioLedRed(gpioLedRed), _gpioLedGreen(gpioLedGreen), _gpioLedBlue(gpioLedBlue), _loggingLevel(loggingLevel)
 {
 
     delay(2000);
@@ -14,11 +14,14 @@ LoggingHelper::LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *tim
  ╚═════╝   ╚═╝   ╚══════╝  By MØWUT\r\n\
 ");
     _uart.printf("Version: %s (%s)\r\n\r\n", VERSION_STRING, BUILD_TIMESTAMP);
-    _timeHelper = timeHelper;
-    _gpioLedRed = gpioLedRed;
-    _gpioLedGreen = gpioLedGreen;
-    _gpioLedBlue = gpioLedBlue;
-    _loggingLevel = loggingLevel;
+    int gpioLed[] = {_gpioLedRed, _gpioLedGreen, _gpioLedBlue};
+    constexpr int numLed = sizeof(gpioLed) / sizeof(gpioLed[0]);
+
+    for (int i = 0; i < numLed; i++)
+    {
+        pinMode(gpioLed[i], OUTPUT);
+        digitalWrite(gpioLed[i], HIGH);
+    }
 }
 
 void LoggingHelper::error(const char *serviceName, const char *errorStr)

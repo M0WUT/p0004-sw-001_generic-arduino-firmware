@@ -1,35 +1,50 @@
 #include "EthernetService.h"
 
-EthernetService::EthernetService() : Service(ServiceId::ETHERNET, EthernetServiceConfig()), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_cs, gpio_w5500_rstn)
+EthernetService::EthernetService() : Service(ServiceId::ETHERNET, EthernetServiceConfig()), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_csn, gpio_w5500_rstn)
 {
+}
+
+void EthernetService::initialise(ServiceContext *ctx)
+{
+    _initialise(ctx);
+    // const char *spiName = _phy.get_spi_instance_name();
+
+    _infof("Ethernet PHY controller configured as %s", _phy.get_spi_instance_name());
+
+    while (1)
+    {
+        _update_link_state();
+    }
 }
 
 void EthernetService::_get_ip_address()
 {
-    // if (_use_dhcp)
-    // {
-    //     _info("Attempting to get IP address over DHCP");
-    //     // This returns 1 on successful connection, 0 if connection failed
-    //     while (Ethernet.begin(_mac_address) != 1)
-    //     {
-    //         delay(500);
-    //         _info("DHCP request failed");
-    //     }
+    if (_config.data.useDhcp)
+    {
+        _info("Attempting to get IP address over DHCP");
+        // This returns 1 on successful connection, 0 if connection failed
+        while (Ethernet.begin(_config.data.macAddress) != 1)
+        {
+            delay(500);
+            _info("DHCP request failed");
+            int hardwareStatus = Ethernet.hardwareStatus();
+            if (hardwareStatus != EthernetW5500)
+            {
+                _error("W5500 Ethernet PHY not detected");
+            }
+            else
+            {
+                _info("W5500 Ethernet PHY detected");
+            }
+        }
 
-    //     _infof("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
-    // }
-    // else
-    // {
-    //     // Ethernet.begin(mac_address, ip_address, subnet_mask);
-    //     // DEBUG_PRINT("Initialising with static IP of ");
-    //     // DEBUG_PRINTLN(ip_address);
-    //     ;
-    // }
-
-    // _info("Starting server...");
-    // _server->begin();
-    // delay(1000);
-    // _info("Server started.");
+        _infof("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+    }
+    else
+    {
+        Ethernet.begin(_config.data.macAddress, _config.data.staticIpAddress, _config.data.subnetMask);
+        _infof("Using static IP address: %d.%d.%d.%d with subnet mask of %d.%d.%d.%d", _config.data.staticIpAddress[0], _config.data.staticIpAddress[1], _config.data.staticIpAddress[2], _config.data.staticIpAddress[3], _config.data.subnetMask[0], _config.data.subnetMask[1], _config.data.subnetMask[2], _config.data.subnetMask[3]);
+    }
 }
 
 void EthernetService::_update_link_state()
@@ -40,14 +55,14 @@ void EthernetService::_update_link_state()
         {
             _info("Ethernet connected");
             _get_ip_address();
-            _link_up = 1;
+            _link_up = true;
         }
     }
     else
     {
         if (Ethernet.linkStatus() == LinkOFF)
         {
-            _link_up = 0;
+            _link_up = false;
             _info("Ethernet disconnected");
         }
         else
@@ -60,10 +75,14 @@ void EthernetService::_update_link_state()
 void EthernetService::_generate_default_config()
 {
     _config.data.useDhcp = true;
-    for (int i = 0; i < 4; i++)
-    {
-        _config.data.staticIpAddress[i] = 0;
-    }
+
+    uint8_t defaultStaticIpAddress[4] = {192, 168, 1, 1};
+    uint8_t defaultSubnetMask[4] = {255, 255, 255, 255};
+
+    memcpy(_config.data.staticIpAddress, defaultStaticIpAddress, sizeof(defaultStaticIpAddress));
+    // Could do with memset but less flexible
+    memcpy(_config.data.subnetMask, defaultSubnetMask, sizeof(defaultSubnetMask));
+
     _config.data.serverPort = 80;
     _config.data.maxClients = 4;
     _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
@@ -74,6 +93,10 @@ void EthernetService::_print_config()
     _info("Config:");
     _infof("\tMAC Address: %02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
     _infof("\tUse DHCP: %s", _config.data.useDhcp ? "Yes" : "No");
+    _infof("\tStatic IP: %d.%d.%d.%d", _config.data.staticIpAddress[0], _config.data.staticIpAddress[1], _config.data.staticIpAddress[2], _config.data.staticIpAddress[3]);
+    _infof("\tSubnet Mask: %d.%d.%d.%d", _config.data.subnetMask[0], _config.data.subnetMask[1], _config.data.subnetMask[2], _config.data.subnetMask[3]);
+    _infof("\tServer Port: %d", _config.data.serverPort);
+    _infof("\tMax clients: %d", _config.data.maxClients);
 }
 
 void EthernetService::tick()
