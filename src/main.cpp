@@ -42,6 +42,5 @@ void setup()
 
 void loop()
 {
-  // lv_task_handler();
-  delay(5);
+  serviceTracker->tick();
 }

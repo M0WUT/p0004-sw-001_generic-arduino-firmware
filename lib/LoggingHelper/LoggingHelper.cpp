@@ -112,6 +112,10 @@ void LoggingHelper::_printStatusMessage(const char *serviceName, const char *mes
         // Yellow
         colourStr = "\x1b[33m";
         break;
+    case LoggingLevel::DEBUG:
+        // Green
+        colourStr = "\x1b[32m";
+        break;
     default:
         break;
     };

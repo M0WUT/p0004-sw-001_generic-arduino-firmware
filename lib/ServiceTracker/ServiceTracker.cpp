@@ -30,3 +30,11 @@ void ServiceTracker::initialiseServices(ServiceContext *ctx)
         _serviceList[i]->initialise(ctx);
     }
 }
+
+void ServiceTracker::tick()
+{
+    for (int i = 0; i < _numServices; i++)
+    {
+        _serviceList[i]->tick();
+    }
+}

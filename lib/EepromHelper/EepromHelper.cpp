@@ -237,7 +237,7 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
 
     // Reason for shuffling is that it saves fragmentation (config will always be sorted and tightly packed)
     // and config updates are likely to be rare events
-    _infof("Allocating space for new %s config (%d bytes)", serviceId._to_string(), configSize);
+    _debugf("Allocating space for new %s config (%d bytes)", serviceId._to_string(), configSize);
 
     // Because of the inherent assumption that all existing configs are closely packed in order
     // we can just shuffle all configs with serviceId > the serviceId of the new config to the right
@@ -263,6 +263,10 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
         uint8_t tmpBuffer[tmpconfigSize];
 
         read_bytes(tmpBaseAddress, tmpBuffer, tmpconfigSize);
+        if ((uint32_t)newBaseAddress + (uint32_t)tmpconfigSize > _eeprom.eepromSizeBytes)
+        {
+            _error("Unable to fit config in EEPROM");
+        }
         write_bytes(newBaseAddress, tmpBuffer, tmpconfigSize);
         _write_cat_base_address(tmpServiceID, newBaseAddress);
 
@@ -293,12 +297,20 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
             if (tmpBaseAddress != UNINITIALISED_CONFIG_BASE_ADDRESS)
             {
                 newBaseAddress = tmpBaseAddress + _get_config_size(tmpServiceID);
+                if ((uint32_t)newBaseAddress + (uint32_t)configSize > _eeprom.eepromSizeBytes)
+                {
+                    _error("Unable to fit config in EEPROM");
+                }
             }
         }
         if (newBaseAddress == UNINITIALISED_CONFIG_BASE_ADDRESS)
         {
             // No preceding entries either so go directly after CAT table
             newBaseAddress = _cat_table_size();
+            if ((uint32_t)newBaseAddress + (uint32_t)configSize > _eeprom.eepromSizeBytes)
+            {
+                _error("Unable to fit config in EEPROM");
+            }
         }
     }
     _write_cat_base_address(serviceId, newBaseAddress);

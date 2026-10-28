@@ -11,6 +11,7 @@ public:
     int write_bytes(int regAddr, uint8_t *data, int numBytes);
     int read_bytes(int regAddr, uint8_t *data, int numBytes);
     bool is_detected();
+    const uint32_t eepromSizeBytes = 32768;
 
 private:
     const int pageSizeBytes = 64;

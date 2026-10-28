@@ -10,6 +10,7 @@ class ServiceTracker
 public:
     ServiceTracker(BaseService *extraServiceList, size_t len);
     void initialiseServices(ServiceContext *ctx);
+    void tick();
 
 private:
     // Service _coreService = Service(ServiceId::CORE);

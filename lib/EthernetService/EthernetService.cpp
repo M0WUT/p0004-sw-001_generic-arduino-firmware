@@ -9,12 +9,18 @@ void EthernetService::initialise(ServiceContext *ctx)
     _initialise(ctx);
     // const char *spiName = _phy.get_spi_instance_name();
 
-    _infof("Ethernet PHY controller configured as %s", _phy.get_spi_instance_name());
+    _debugf("Ethernet PHY controller configured as %s", _phy.get_spi_instance_name());
 
-    while (1)
+    if (_phy.w5500_present())
     {
-        _update_link_state();
+        _debugf("W5500 detected");
     }
+    else
+    {
+        _error("Failed to detect W5500");
+    }
+    _udp = new EthernetUDP();
+    _ntpClient = new NTPClient(*_udp, _config.data.ntpServerAddress, 0, _config.data.ntpUpdateIntervalSeconds * 1000);
 }
 
 void EthernetService::_get_ip_address()
@@ -27,18 +33,9 @@ void EthernetService::_get_ip_address()
         {
             delay(500);
             _info("DHCP request failed");
-            int hardwareStatus = Ethernet.hardwareStatus();
-            if (hardwareStatus != EthernetW5500)
-            {
-                _error("W5500 Ethernet PHY not detected");
-            }
-            else
-            {
-                _info("W5500 Ethernet PHY detected");
-            }
         }
 
-        _infof("Got IP throught DHCP of %d.%d.%d.%d\r\n", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+        _infof("Got IP throught DHCP of %d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     }
     else
     {
@@ -49,21 +46,21 @@ void EthernetService::_get_ip_address()
 
 void EthernetService::_update_link_state()
 {
-    if (!_link_up)
+    if (!_linkUp)
     {
         if (Ethernet.linkStatus() == LinkON)
         {
-            _info("Ethernet connected");
+            _info("Ethernet link up");
             _get_ip_address();
-            _link_up = true;
+            _linkUp = true;
         }
     }
     else
     {
         if (Ethernet.linkStatus() == LinkOFF)
         {
-            _link_up = false;
-            _info("Ethernet disconnected");
+            _linkUp = false;
+            _info("Ethernet link down");
         }
         else
         {
@@ -77,7 +74,7 @@ void EthernetService::_generate_default_config()
     _config.data.useDhcp = true;
 
     uint8_t defaultStaticIpAddress[4] = {192, 168, 1, 1};
-    uint8_t defaultSubnetMask[4] = {255, 255, 255, 255};
+    uint8_t defaultSubnetMask[4] = {255, 255, 255, 0};
 
     memcpy(_config.data.staticIpAddress, defaultStaticIpAddress, sizeof(defaultStaticIpAddress));
     // Could do with memset but less flexible
@@ -86,6 +83,12 @@ void EthernetService::_generate_default_config()
     _config.data.serverPort = 80;
     _config.data.maxClients = 4;
     _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
+
+    // NTP
+    _config.data.useNtp = true;
+    String ntpServer = "europe.pool.ntp.org";
+    snprintf(_config.data.ntpServerAddress, ntpServer.length() + 1, "%s\0", ntpServer.c_str());
+    _config.data.ntpUpdateIntervalSeconds = 86400;
 }
 
 void EthernetService::_print_config()
@@ -97,9 +100,39 @@ void EthernetService::_print_config()
     _infof("\tSubnet Mask: %d.%d.%d.%d", _config.data.subnetMask[0], _config.data.subnetMask[1], _config.data.subnetMask[2], _config.data.subnetMask[3]);
     _infof("\tServer Port: %d", _config.data.serverPort);
     _infof("\tMax clients: %d", _config.data.maxClients);
+    _infof("\tUse NTP: %s", _config.data.useNtp ? "Yes" : "No");
+    _infof("\tNTP Server: %s", _config.data.ntpServerAddress);
+    _infof("\tNTP Update Interval (seconds): %lu", _config.data.ntpUpdateIntervalSeconds);
 }
 
 void EthernetService::tick()
 {
     _update_link_state();
+    if (_linkUp && _ntpClient != NULL)
+    {
+        // Update returns true if a successful update was made
+        // sadly, it returns false if either the update failed
+        // or the update interval hadn't passed. So I don't think there's
+        // a great way to distinguish between the two, short of tracking ourselves
+        if (_ntpClient->update())
+        {
+            // Standard NTP library doesn't include date
+            // Taking code from issue #36 (https://github.com/arduino-libraries/NTPClient/issues/36)
+            time_t rawtime = _ntpClient->getEpochTime();
+            struct tm *ti;
+            ti = localtime(&rawtime);
+
+            int year = ti->tm_year + 1900;
+            int month = ti->tm_mon + 1; // tm_mon starts from 0
+            int day = ti->tm_mday;
+
+            int hour = _ntpClient->getHours();
+            int minute = _ntpClient->getMinutes();
+            int second = _ntpClient->getSeconds();
+
+            _info("!!! NTP Sync - logging time is about to jump (maybe backwards) !!!");
+            _ctx->timeHelper->set_time(year, month, day, hour, minute, second);
+            _info("New time set");
+        }
+    }
 }
