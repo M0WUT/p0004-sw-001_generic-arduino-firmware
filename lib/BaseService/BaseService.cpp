@@ -35,6 +35,11 @@ void BaseService::tick()
     _debug("Tick");
 }
 
+ServiceId BaseService::getServiceId()
+{
+    return _serviceId;
+}
+
 bool BaseService::_load_eeprom_config()
 {
     ConfigData *config = _getConfig();

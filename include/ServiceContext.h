@@ -5,15 +5,14 @@
 #include "LoggingHelper.h"
 #include "EepromHelper.h"
 
-class TimeHelper;
-class LoggingHelper;
-class EepromHelper;
+class ServiceHelper;
 
 struct ServiceContext
 {
     TimeHelper *timeHelper;
     LoggingHelper *loggingHelper;
     EepromHelper *eepromHelper;
+    ServiceHelper *serviceTracker;
 };
 
 #endif // SERVICECONTEXT_H

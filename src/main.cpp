@@ -6,7 +6,6 @@ lv_display_t *disp;
 TFTHandler *tft;
 lv_obj_t *main_scr;
 
-ServiceTracker *serviceTracker;
 TimeHelper timeHelper = TimeHelper();
 LoggingHelper loggingHelper = LoggingHelper(gpio_uart_debug_tx, gpio_uart_debug_rx, &timeHelper, gpio_led_red, gpio_led_green, gpio_led_blue, LOGGING_LEVEL);
 
@@ -16,10 +15,13 @@ HelperContext helperContext = {
 
 I2CBus i2c_internal = I2CBus(gpio_i2c_int_scl, gpio_i2c_int_sda);
 EepromHelper eepromHelper = EepromHelper(EEPROM24AA256UID(&i2c_internal, int_eeprom_i2c_addr), &helperContext);
+ServiceHelper serviceTracker = ServiceHelper(NULL, 0, &helperContext);
+
 ServiceContext serviceContext = {
     &timeHelper,
     &loggingHelper,
     &eepromHelper,
+    &serviceTracker,
 };
 
 void setup()
@@ -36,11 +38,10 @@ void setup()
   // }
   // tft->set_lcd_brightness(255);
 
-  serviceTracker = new ServiceTracker(NULL, 0);
-  serviceTracker->initialiseServices(&serviceContext);
+  serviceTracker.initialiseServices(&serviceContext);
 }
 
 void loop()
 {
-  serviceTracker->tick();
+  serviceTracker.tick();
 }

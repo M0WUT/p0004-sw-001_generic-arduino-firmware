@@ -1,24 +1,26 @@
 #include "EthernetService.h"
 
-EthernetService::EthernetService() : Service(ServiceId::ETHERNET, EthernetServiceConfig()), _phy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_csn, gpio_w5500_rstn)
+EthernetService::EthernetService() : Service(ServiceId::ETHERNET, EthernetServiceConfig())
 {
 }
 
 void EthernetService::initialise(ServiceContext *ctx)
 {
     _initialise(ctx);
-    // const char *spiName = _phy.get_spi_instance_name();
+    _phy = new SpiEthernetPhy(gpio_w5500_miso, gpio_w5500_mosi, gpio_w5500_sclk, gpio_w5500_csn, gpio_w5500_rstn);
+    const char *spiName = _phy->get_spi_instance_name();
 
-    _debugf("Ethernet PHY controller configured as %s", _phy.get_spi_instance_name());
+    _debugf("Ethernet PHY controller configured as %s", spiName);
 
-    if (_phy.w5500_present())
+    if (_phy->w5500_present())
     {
-        _debugf("W5500 detected");
+        _debug("W5500 detected");
     }
     else
     {
-        _error("Failed to detect W5500");
+        _error("Failed to detect W5500 Ethernet PHY");
     }
+
     _udp = new EthernetUDP();
     _ntpClient = new NTPClient(*_udp, _config.data.ntpServerAddress, 0, _config.data.ntpUpdateIntervalSeconds * 1000);
 }

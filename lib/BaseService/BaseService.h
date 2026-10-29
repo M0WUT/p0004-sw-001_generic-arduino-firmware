@@ -14,6 +14,7 @@ public:
     BaseService(ServiceId serviceId) : _serviceId(serviceId) {}
     virtual void initialise(ServiceContext *ctx) = 0;
     virtual void tick();
+    ServiceId getServiceId();
 
 protected:
     ServiceId _serviceId;

@@ -20,7 +20,7 @@ SpiEthernetPhy::SpiEthernetPhy(int gpio_miso, int gpio_mosi, int gpio_sclk, int 
     // ... and let the Ethernet driver handle it exclusively
     Ethernet.init(gpio_csn);
 
-    // Have to begin transaction to apply new settings
+    // Need to call beginTransaction to apply new settings to SPI device
     SPI.beginTransaction(SPI_ETHERNET_DEFAULT_SETTINGS);
     SPI.endTransaction();
 

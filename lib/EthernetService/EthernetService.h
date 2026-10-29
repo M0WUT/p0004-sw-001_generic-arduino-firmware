@@ -36,7 +36,7 @@ public:
     void tick();
 
 private:
-    SpiEthernetPhy _phy;
+    SpiEthernetPhy *_phy;
     EthernetServer *_server;
     EthernetClient *_clients;
     bool _linkUp = false;
