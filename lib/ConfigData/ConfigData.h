@@ -85,7 +85,7 @@ struct ConfigFieldList
         if (minimum > maximum || step <= 0)
             return false;
         char tmp[DISPLAY_VALUE_BUFFER_SIZE];
-        snprintf(tmp, sizeof(tmp), "%" PRId64, value);
+        snprintf(tmp, sizeof(tmp), "%" PRId32, value);
         ConfigField *f = add(id, label, ConfigFieldType::Integer, tmp);
         if (!f)
             return false;

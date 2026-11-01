@@ -1,3 +1,4 @@
+
 #include "WebpageService.h"
 
 WebpageService::WebpageService() : Service(ServiceId::WEBPAGE, WebpageServiceConfig())
@@ -23,7 +24,7 @@ void WebpageService::tick()
             {
                 client.setTimeout(2000);
                 _handle_client(client);
-                delay(1);
+                client.flush();
                 client.stop();
             }
         }
@@ -37,6 +38,7 @@ void WebpageService::tick()
     else if (linkUp)
     {
         // Link has been established since last check - start server
+        _server = new EthernetServer(_config.data.serverPort);
         _server->begin();
         _serverRunning = true;
     }
@@ -62,6 +64,7 @@ void WebpageService::generate_config_page(Print &out)
 {
     BaseService **services = _ctx->serviceHelper->get_service_list();
     int numServices = _ctx->serviceHelper->get_num_services();
+    // HTML header and CSS - chunk 1
     out.print(F(R"HTML(<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>STM32 Configuration</title>
 <style>
@@ -70,21 +73,95 @@ body{background:var(--bg);color:var(--fg);font-family:Arial,sans-serif;margin:20
 .tabs{display:flex;flex-wrap:wrap;gap:5px;border-bottom:2px solid var(--accent)}
 .tab{padding:12px 20px;background:#555;color:#fff;border:1px solid #888;cursor:pointer}
 .tab.active{background:var(--accent);border-color:var(--accent);font-weight:bold}
+)HTML"));
+
+    // CSS - chunk 2
+    out.print(F(R"HTML(
 .panel{display:none;border:1px solid #888;padding:15px;overflow-x:auto}.panel.active{display:block}
-table{width:100%;min-width:600px;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #888;vertical-align:middle}
+table{width:100%;min-width:600px;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #888;vertical-align:middle}
 th{background:#555;font-size:13px}.parameter{width:30%;font-weight:600}
 .current{width:22%;font-size:2.2rem;font-weight:bold;color:var(--accent);white-space:nowrap}
 .new-value{width:30%}.action{width:18%}
 .limits{display:block;margin-top:5px;font-size:12px;font-weight:normal;color:#eee}
+)HTML"));
+
+    // CSS - chunk 3
+    out.print(F(R"HTML(
 input[type=text],input[type=number]{width:100%;max-width:210px;padding:9px;font-size:16px;box-sizing:border-box;background:#fff;color:#333;border:2px solid #999;border-radius:4px}
-input:focus{outline:2px solid var(--accent)}input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+input:focus{outline:2px solid var(--accent)}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{appearance:textfield;-moz-appearance:textfield}
 .update{padding:10px 18px;background:var(--accent);color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold}
 .update:disabled{opacity:.5;cursor:wait}.status{display:block;margin-top:6px;font-size:12px;overflow-wrap:anywhere}
 .ok{color:#fff}.error{color:#ffcccc}
-</style></head><body><h1>Service Configuration</h1><div class="tabs">
+</style>
 )HTML"));
+
+    // JavaScript - chunk 1
+    out.print(F(R"HTML(
+<script>
+const successTimers = new WeakMap();
+function showTab(index){
+ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',Number(t.dataset.service)===index));
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel'+index));
+}
+)HTML"));
+
+    // JavaScript - chunk 2
+    out.print(F(R"HTML(
+function clearSuccessTimer(row){
+ const t=successTimers.get(row);
+ if(t!==undefined){clearTimeout(t);successTimers.delete(row)}
+}
+async function updateField(button){
+ const row=button.closest('tr'),input=row.querySelector('input'),current=row.querySelector('.current'),status=row.querySelector('.status');
+ clearSuccessTimer(row);
+ if(!input.checkValidity()){input.reportValidity();status.textContent='Invalid input';status.className='status error';return}
+ const value=input.type==='checkbox'?(input.checked?'true':'false'):input.value;
+ button.disabled=true;status.textContent='Updating...';status.className='status';
+)HTML"));
+
+    // JavaScript - chunk 3
+    out.print(F(R"HTML(
+ try{
+  const body=new URLSearchParams({service:button.dataset.service,field:button.dataset.field,value});
+  const response=await fetch('/config/update',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString(),cache:'no-store'});
+  const reply=await response.text();
+  if(response.ok){
+   current.textContent=input.type==='checkbox'?(reply==='true'?'Yes':'No'):reply;
+   if(input.type==='checkbox')input.checked=reply==='true';else input.value=reply;
+   status.textContent='Updated successfully';status.className='status ok';
+)HTML"));
+
+    // JavaScript - chunk 4
+    out.print(F(R"HTML(
+   const timer=setTimeout(()=>{status.textContent='';status.className='status';successTimers.delete(row)},5000);
+   successTimers.set(row,timer);
+  }else{status.textContent=reply||'Update refused';status.className='status error'}
+ }catch(e){status.textContent='Communication error';status.className='status error'}
+ finally{button.disabled=false}
+}
+)HTML"));
+
+    // JavaScript - chunk 5
+    out.print(F(R"HTML(
+document.addEventListener('DOMContentLoaded',()=>{
+ document.querySelectorAll('.new-value input').forEach(input=>input.addEventListener('input',()=>{
+ const row=input.closest('tr');clearSuccessTimer(row);
+ const status=row.querySelector('.status');status.textContent='';status.className='status';
+}));
+});
+</script>
+</head><body><h1>Service Configuration</h1><div class="tabs">
+)HTML"));
+    out.print(F("<script>"));
+    out.print(F("function showTab(index){"));
+    out.print(F("document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',Number(t.dataset.service)===index));"));
+    out.print(F("document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel'+index));"));
+    out.print(F("}"));
+    out.print(F("</script>"));
     bool first = true;
     for (size_t s = 0; s < numServices; ++s)
     {
@@ -130,7 +207,7 @@ input[type=number]{appearance:textfield;-moz-appearance:textfield}
             {
                 char limits[128];
                 if (f.type == ConfigFieldType::Integer)
-                    snprintf(limits, sizeof(limits), "%" PRId64 " - %" PRId64 ", step %" PRId64, f.intMin, f.intMax, f.intStep);
+                    snprintf(limits, sizeof(limits), "%" PRId32 " - %" PRId32 ", step %" PRId32, f.intMin, f.intMax, f.intStep);
                 else
                     snprintf(limits, sizeof(limits), "%.6g - %.6g, step %.6g", f.floatMin, f.floatMax, f.floatStep);
                 out.print(F("<span class='limits'>"));
@@ -158,13 +235,13 @@ input[type=number]{appearance:textfield;-moz-appearance:textfield}
                     char attr[64];
                     if (f.type == ConfigFieldType::Integer)
                     {
-                        snprintf(attr, sizeof(attr), "%" PRId64, f.intMin);
+                        snprintf(attr, sizeof(attr), "%" PRId32, f.intMin);
                         out.print(F(" min='"));
                         out.print(attr);
-                        snprintf(attr, sizeof(attr), "%" PRId64, f.intMax);
+                        snprintf(attr, sizeof(attr), "%" PRId32, f.intMax);
                         out.print(F("' max='"));
                         out.print(attr);
-                        snprintf(attr, sizeof(attr), "%" PRId64, f.intStep);
+                        snprintf(attr, sizeof(attr), "%" PRId32, f.intStep);
                         out.print(F("' step='"));
                         out.print(attr);
                     }
@@ -195,38 +272,8 @@ input[type=number]{appearance:textfield;-moz-appearance:textfield}
         }
         out.println(F("</tbody></table></section>"));
     }
-    out.println(F(R"HTML(<script>
-const successTimers = new WeakMap();
-function showTab(index){
- document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',Number(t.dataset.service)===index));
- document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel'+index));
-}
-function clearSuccessTimer(row){const t=successTimers.get(row);if(t!==undefined){clearTimeout(t);successTimers.delete(row)}}
-async function updateField(button){
- const row=button.closest('tr'),input=row.querySelector('input'),current=row.querySelector('.current'),status=row.querySelector('.status');
- clearSuccessTimer(row);
- if(!input.checkValidity()){input.reportValidity();status.textContent='Invalid input';status.className='status error';return}
- const value=input.type==='checkbox'?(input.checked?'true':'false'):input.value;
- button.disabled=true;status.textContent='Updating...';status.className='status';
- try{
-  const body=new URLSearchParams({service:button.dataset.service,field:button.dataset.field,value});
-  const response=await fetch('/config/update',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString(),cache:'no-store'});
-  const reply=await response.text();
-  if(response.ok){
-   current.textContent=input.type==='checkbox'?(reply==='true'?'Yes':'No'):reply;
-   if(input.type==='checkbox')input.checked=reply==='true';else input.value=reply;
-   status.textContent='Updated successfully';status.className='status ok';
-   const timer=setTimeout(()=>{status.textContent='';status.className='status';successTimers.delete(row)},5000);
-   successTimers.set(row,timer);
-  }else{status.textContent=reply||'Update refused';status.className='status error'}
- }catch(e){status.textContent='Communication error';status.className='status error'}
- finally{button.disabled=false}
-}
-document.querySelectorAll('.new-value input').forEach(input=>input.addEventListener('input',()=>{
- const row=input.closest('tr');clearSuccessTimer(row);
- const status=row.querySelector('.status');status.textContent='';status.className='status';
-}));
-</script></body></html>)HTML"));
+    out.println(F(R"HTML(</body></html>)HTML"));
+    out.println(F("<!-- END_OF_CONFIG_PAGE -->"));
 }
 
 void WebpageService::_generate_default_config()

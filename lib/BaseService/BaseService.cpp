@@ -1,6 +1,5 @@
 #include "BaseService.h"
 #include "ServiceContext.h"
-#include "ServiceHelper.h"
 #include "LoggingHelper.h"
 #include "EepromHelper.h"
 
@@ -46,8 +45,7 @@ ServiceId BaseService::getServiceId()
 bool BaseService::_load_eeprom_config()
 {
     ConfigData *config = _get_config();
-    _ctx->eepromHelper->read_service_config(_serviceId, config, config->size(), config->version);
-    return 0;
+    return _ctx->eepromHelper->read_service_config(_serviceId, config, config->size(), config->version);
 }
 
 bool BaseService::parse_new_config_value(
