@@ -15,4 +15,7 @@
 #include "tft_handler.h"
 #include "logging.h"
 
+#include "EthernetService.h"
+#include "WebpageService.h"
+
 #endif // INC_MAIN_H

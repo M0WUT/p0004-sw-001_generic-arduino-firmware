@@ -5,6 +5,7 @@
 #include "LoggingHelper.h"
 #include "EepromHelper.h"
 
+// Forward declaration
 class ServiceHelper;
 
 struct ServiceContext
@@ -12,7 +13,7 @@ struct ServiceContext
     TimeHelper *timeHelper;
     LoggingHelper *loggingHelper;
     EepromHelper *eepromHelper;
-    ServiceHelper *serviceTracker;
+    ServiceHelper *serviceHelper;
 };
 
 #endif // SERVICECONTEXT_H

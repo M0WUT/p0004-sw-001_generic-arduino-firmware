@@ -15,14 +15,19 @@ HelperContext helperContext = {
 
 I2CBus i2c_internal = I2CBus(gpio_i2c_int_scl, gpio_i2c_int_sda);
 EepromHelper eepromHelper = EepromHelper(EEPROM24AA256UID(&i2c_internal, int_eeprom_i2c_addr), &helperContext);
-ServiceHelper serviceTracker = ServiceHelper(NULL, 0, &helperContext);
+ServiceHelper serviceHelper = ServiceHelper(&helperContext);
 
 ServiceContext serviceContext = {
     &timeHelper,
     &loggingHelper,
     &eepromHelper,
-    &serviceTracker,
+    &serviceHelper,
 };
+
+EthernetService ethernetService = EthernetService();
+WebpageService webpageService = WebpageService();
+BaseService *coreServiceList[] = {&ethernetService, &webpageService};
+BaseService *extraServiceList[] = {};
 
 void setup()
 {
@@ -38,10 +43,18 @@ void setup()
   // }
   // tft->set_lcd_brightness(255);
 
-  serviceTracker.initialiseServices(&serviceContext);
+  serviceHelper.register_services(coreServiceList, sizeof(coreServiceList) / sizeof(coreServiceList[0]));
+  serviceHelper.register_services(extraServiceList, sizeof(extraServiceList) / sizeof(extraServiceList[0]));
+
+  BaseService **serviceList = serviceHelper.get_service_list();
+  for (int i = 0; i < serviceHelper.get_num_services(); i++)
+  {
+    if (serviceList[i] != NULL)
+      serviceList[i]->initialise(&serviceContext);
+  }
 }
 
 void loop()
 {
-  serviceTracker.tick();
+  serviceHelper.tick();
 }

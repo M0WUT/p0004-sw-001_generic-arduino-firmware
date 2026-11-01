@@ -19,6 +19,7 @@ public:
     void hexdump(uint16_t start_addr, uint16_t size);
     uint8_t get_config_version(ServiceId serviceId);
     void get_mac_address(uint8_t *buffer, size_t bufferSize);
+    const char *get_name();
 
 private:
     EEPROM24AA256UID _eeprom;

@@ -1,54 +1,29 @@
 #include "ServiceHelper.h"
+#include "BaseService.h"
 
-ServiceHelper::ServiceHelper(BaseService **extraServiceList, size_t len, HelperContext *ctx) : _ctx(ctx)
+ServiceHelper::ServiceHelper(HelperContext *ctx) : _ctx(ctx)
 {
-    // This list of pointers will get destroyed after this function
-    // But the pointers are still valid as the objects will still exist
-    BaseService *defaultServiceList[] = {(BaseService *)&_ethernetService};
-    //{&_coreService, &_powerService, &_thermalService, &_lcdService, &_ethernetService};
-
-    _serviceList = (BaseService **)malloc((sizeof(BaseService *) * ServiceId::_size()));
-    for (int i = 0; i < ServiceId::_size(); i++)
+    _serviceList = (BaseService **)malloc((sizeof(BaseService *) * get_num_services()));
+    for (int i = 0; i < get_num_services(); i++)
     {
         _serviceList[i] = NULL;
     }
-
-    // Default services
-    int numDefaultServices = sizeof(defaultServiceList) / sizeof(defaultServiceList[0]);
-    for (int i = 0; i < numDefaultServices; i++)
-    {
-        ServiceId id = defaultServiceList[i]->getServiceId();
-        int index = id._to_integral();
-        if (_serviceList[index] != NULL)
-        {
-            _ctx->loggingHelper->error("Service Helper", "Attempted to create multiple instances of the same service");
-        }
-        _serviceList[index] = defaultServiceList[i];
-    }
-
-    // Extra Services
+}
+void ServiceHelper::register_services(BaseService **serviceList, size_t len)
+{
     for (int i = 0; i < len; i++)
     {
-        ServiceId id = extraServiceList[i]->getServiceId();
+        ServiceId id = serviceList[i]->getServiceId();
         int index = id._to_integral();
         if (_serviceList[index] != NULL)
         {
             _ctx->loggingHelper->error("Service Helper", "Attempted to create multiple instances of the same service");
         }
-        _serviceList[index] = extraServiceList[i];
+        _serviceList[index] = serviceList[i];
     }
 }
 
-void ServiceHelper::initialiseServices(ServiceContext *ctx)
-{
-    for (int i = 0; i < ServiceId::_size(); i++)
-    {
-        if (_serviceList[i] != NULL)
-            _serviceList[i]->initialise(ctx);
-    }
-}
-
-BaseService *ServiceHelper::getService(ServiceId serviceId)
+BaseService *ServiceHelper::get_service(ServiceId serviceId)
 {
     int index = serviceId._to_integral();
     BaseService *ret = _serviceList[index];
@@ -61,9 +36,19 @@ BaseService *ServiceHelper::getService(ServiceId serviceId)
 
 void ServiceHelper::tick()
 {
-    for (int i = 0; i < ServiceId::_size(); i++)
+    for (int i = 0; i < get_num_services(); i++)
     {
         if (_serviceList[i] != NULL)
             _serviceList[i]->tick();
     }
+}
+
+BaseService **ServiceHelper::get_service_list()
+{
+    return _serviceList;
+}
+
+int ServiceHelper::get_num_services()
+{
+    return ServiceId::_size();
 }

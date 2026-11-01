@@ -82,8 +82,6 @@ void EthernetService::_generate_default_config()
     // Could do with memset but less flexible
     memcpy(_config.data.subnetMask, defaultSubnetMask, sizeof(defaultSubnetMask));
 
-    _config.data.serverPort = 80;
-    _config.data.maxClients = 4;
     _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
 
     // NTP
@@ -100,8 +98,6 @@ void EthernetService::_print_config()
     _infof("\tUse DHCP: %s", _config.data.useDhcp ? "Yes" : "No");
     _infof("\tStatic IP: %d.%d.%d.%d", _config.data.staticIpAddress[0], _config.data.staticIpAddress[1], _config.data.staticIpAddress[2], _config.data.staticIpAddress[3]);
     _infof("\tSubnet Mask: %d.%d.%d.%d", _config.data.subnetMask[0], _config.data.subnetMask[1], _config.data.subnetMask[2], _config.data.subnetMask[3]);
-    _infof("\tServer Port: %d", _config.data.serverPort);
-    _infof("\tMax clients: %d", _config.data.maxClients);
     _infof("\tUse NTP: %s", _config.data.useNtp ? "Yes" : "No");
     _infof("\tNTP Server: %s", _config.data.ntpServerAddress);
     _infof("\tNTP Update Interval (seconds): %lu", _config.data.ntpUpdateIntervalSeconds);
@@ -137,4 +133,24 @@ void EthernetService::tick()
             _info("New time set");
         }
     }
+}
+
+void EthernetService::get_config_fields(ConfigFieldList &fields) const
+{
+    fields.addBoolean("useDhcp", "Use DHCP?", _config.data.useDhcp);
+}
+
+bool EthernetService::validate_config_field(const char *, const ConfigValue &, char *, size_t)
+{
+    return true;
+}
+
+bool EthernetService::update_config_field(const char *id, const ConfigValue &value, char *error, size_t errorSize)
+{
+    return true;
+}
+
+bool EthernetService::link_up()
+{
+    return _linkUp;
 }

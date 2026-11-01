@@ -244,7 +244,7 @@ uint16_t EepromHelper::_allocate_new_config(ServiceId serviceId, size_t configSi
     // by configSize bytes which should create a perfectly sized gap
 
     uint16_t baseAddress = UNINITIALISED_CONFIG_BASE_ADDRESS;
-    for (int i = ServiceId::_size() - 1; i > serviceId._to_index(); i--)
+    for (int i = NUM_KNOWN_SERVICES - 1; i > serviceId._to_index(); i--)
     {
         ServiceId tmpServiceID = ServiceId::_values()[i];
         // _debugf("Checking %s", tmpServiceID._to_string());
@@ -484,4 +484,9 @@ void EepromHelper::get_mac_address(uint8_t *buffer, size_t bufferSize)
         _error("Invalid buffer size allocated for MAC address load");
     }
     _eeprom.read_mac_address(buffer);
+}
+
+const char *EepromHelper::get_name()
+{
+    return "EEPROM";
 }

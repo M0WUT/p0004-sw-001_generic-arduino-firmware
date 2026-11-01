@@ -9,11 +9,11 @@ class NamedTask
 {
 public:
     NamedTask();
+    virtual const char *get_name() = 0;
 
 protected:
     char _printBuffer[PRINT_BUFFER_SIZE];
     virtual LoggingHelper *_getLoggingHelper() = 0;
-    virtual const char *_getName() = 0;
 
     void _error(const char *errorStr);
     void _errorf(const char *fmt, ...);
