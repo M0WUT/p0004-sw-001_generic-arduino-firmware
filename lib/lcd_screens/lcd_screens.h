@@ -8,6 +8,6 @@
 #include "gte_logo.h"
 #include "version.h"
 
-void create_startup_screen(lv_obj_t *startup_screen, lv_subject_t *init_progress_percent);
+void create_startup_screen(lv_obj_t *startup_screen);
 
 #endif

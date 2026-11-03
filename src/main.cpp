@@ -28,14 +28,13 @@ WebpageService webpageService = WebpageService();
 BaseService *coreServiceList[] = {&ethernetService, &webpageService};
 BaseService *extraServiceList[] = {};
 lv_obj_t *startup_screen;
-lv_subject_t *init_progress_percent;
 
 void setup()
 {
   tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
   disp = tft->get_lvgl_display();
   startup_screen = lv_obj_create(NULL);
-  create_startup_screen(startup_screen, init_progress_percent);
+  create_startup_screen(startup_screen);
   lv_screen_load(startup_screen);
 
   // lv_obj_set_size(img1, 150, 150);
@@ -68,7 +67,7 @@ void setup()
     if (serviceList[i] == NULL)
       continue;
     lv_label_set_text_fmt(init_label, "Starting %s service...", serviceList[i]->get_name());
-    lv_subject_set_int(init_progress_percent, 100 * i / serviceHelper.get_num_services());
+
     lv_task_handler();
     serviceList[i]->initialise(&serviceContext);
   }
