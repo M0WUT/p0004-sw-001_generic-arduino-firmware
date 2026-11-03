@@ -47,6 +47,7 @@ private:
     void _get_ip_address();
     void _update_link_state();
     ConfigData *_get_config() { return &_config; }
+    const char *get_name() override { return "Ethernet"; }
     void _generate_default_config();
     void _print_config();
 

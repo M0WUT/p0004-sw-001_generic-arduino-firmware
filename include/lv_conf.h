@@ -2084,7 +2084,7 @@
 /** Periodically collect CPU, FPS and memory statistics and optionally show them in an
  *  on-screen overlay.
  */
-#define LV_USE_SYSMON 1
+#define LV_USE_SYSMON 0
 
 #if LV_USE_SYSMON
 /** The port provides `lv_os_get_proc_idle_percent` a per-process idle percentage

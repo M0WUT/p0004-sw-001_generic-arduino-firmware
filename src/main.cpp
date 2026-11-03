@@ -4,7 +4,6 @@
 
 lv_display_t *disp;
 TFTHandler *tft;
-lv_obj_t *main_scr;
 
 TimeHelper timeHelper = TimeHelper();
 LoggingHelper loggingHelper = LoggingHelper(gpio_uart_debug_tx, gpio_uart_debug_rx, &timeHelper, gpio_led_red, gpio_led_green, gpio_led_blue, LOGGING_LEVEL);
@@ -28,30 +27,54 @@ EthernetService ethernetService = EthernetService();
 WebpageService webpageService = WebpageService();
 BaseService *coreServiceList[] = {&ethernetService, &webpageService};
 BaseService *extraServiceList[] = {};
+lv_obj_t *startup_screen;
+lv_subject_t *init_progress_percent;
 
 void setup()
 {
-  // tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
-  // disp = tft->get_lvgl_display();
-  // main_scr = create_home_screen();
-  // lv_screen_load(main_scr);
-  // // Allow for all of the data on the LCD to be updated before we enable the backlight
-  // // Just looks bad if we see garbage on the screen
-  // for (int i = 0; i < 20; i++)
-  // {
-  //   lv_task_handler();
-  // }
-  // tft->set_lcd_brightness(255);
+  tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
+  disp = tft->get_lvgl_display();
+  startup_screen = lv_obj_create(NULL);
+  create_startup_screen(startup_screen, init_progress_percent);
+  lv_screen_load(startup_screen);
+
+  // lv_obj_set_size(img1, 150, 150);
+
+  // Allow for all of the data on the LCD to be updated before we enable the backlight
+  // Just looks bad if we see garbage on the screen
+  for (int i = 0; i < 20; i++)
+  {
+    lv_task_handler();
+  }
+  tft->set_lcd_brightness(255);
 
   serviceHelper.register_services(coreServiceList, sizeof(coreServiceList) / sizeof(coreServiceList[0]));
   serviceHelper.register_services(extraServiceList, sizeof(extraServiceList) / sizeof(extraServiceList[0]));
 
+  lv_obj_t *init_label = lv_label_create(startup_screen);
+  lv_label_set_text(init_label, "By Dan M0WUT");
+  lv_obj_align(init_label, LV_ALIGN_BOTTOM_MID, 0, -8);
+  lv_obj_set_style_text_align(init_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+  lv_obj_set_style_text_color(init_label, lv_color_white(), LV_PART_MAIN);
+  for (int i = 0; i < 1000; i++)
+  {
+    lv_task_handler();
+    delay(1);
+  }
+
   BaseService **serviceList = serviceHelper.get_service_list();
   for (int i = 0; i < serviceHelper.get_num_services(); i++)
   {
-    if (serviceList[i] != NULL)
-      serviceList[i]->initialise(&serviceContext);
+    if (serviceList[i] == NULL)
+      continue;
+    lv_label_set_text_fmt(init_label, "Starting %s service...", serviceList[i]->get_name());
+    lv_subject_set_int(init_progress_percent, 100 * i / serviceHelper.get_num_services());
+    lv_task_handler();
+    serviceList[i]->initialise(&serviceContext);
   }
+
+  lv_label_set_text(init_label, "Initialisation complete");
+  lv_task_handler();
 }
 
 void loop()
