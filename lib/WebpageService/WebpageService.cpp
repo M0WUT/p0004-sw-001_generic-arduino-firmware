@@ -50,7 +50,7 @@ void WebpageService::get_config_fields(ConfigFieldList &fields) const
     fields.addInteger("maxClients", "Maximum number of clients", _config.data.maxClients, 1, 10);
 }
 
-bool WebpageService::validate_config_field(const char *, const ConfigValue &, char *, size_t)
+bool WebpageService::validate_config_field(const char *id, const ConfigValue &value, char *error, size_t errorSize)
 {
     return true;
 }
@@ -64,7 +64,7 @@ void WebpageService::generate_config_page(Print &out)
 {
     BaseService **services = _ctx->serviceHelper->get_service_list();
     int numServices = _ctx->serviceHelper->get_num_services();
-    // HTML header and CSS - chunk 1
+    // Keep printing around 1000 bytes. Data seems to get lost if > 1 MTU
     out.print(F(R"HTML(<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>STM32 Configuration</title>
 <style>
@@ -75,7 +75,6 @@ body{background:var(--bg);color:var(--fg);font-family:Arial,sans-serif;margin:20
 .tab.active{background:var(--accent);border-color:var(--accent);font-weight:bold}
 )HTML"));
 
-    // CSS - chunk 2
     out.print(F(R"HTML(
 .panel{display:none;border:1px solid #888;padding:15px;overflow-x:auto}.panel.active{display:block}
 table{width:100%;min-width:600px;border-collapse:collapse}
@@ -86,7 +85,6 @@ th{background:#555;font-size:13px}.parameter{width:30%;font-weight:600}
 .limits{display:block;margin-top:5px;font-size:12px;font-weight:normal;color:#eee}
 )HTML"));
 
-    // CSS - chunk 3
     out.print(F(R"HTML(
 input[type=text],input[type=number]{width:100%;max-width:210px;padding:9px;font-size:16px;box-sizing:border-box;background:#fff;color:#333;border:2px solid #999;border-radius:4px}
 input:focus{outline:2px solid var(--accent)}
@@ -99,7 +97,6 @@ input[type=number]{appearance:textfield;-moz-appearance:textfield}
 </style>
 )HTML"));
 
-    // JavaScript - chunk 1
     out.print(F(R"HTML(
 <script>
 const successTimers = new WeakMap();
@@ -109,7 +106,6 @@ function showTab(index){
 }
 )HTML"));
 
-    // JavaScript - chunk 2
     out.print(F(R"HTML(
 function clearSuccessTimer(row){
  const t=successTimers.get(row);
@@ -123,7 +119,6 @@ async function updateField(button){
  button.disabled=true;status.textContent='Updating...';status.className='status';
 )HTML"));
 
-    // JavaScript - chunk 3
     out.print(F(R"HTML(
  try{
   const body=new URLSearchParams({service:button.dataset.service,field:button.dataset.field,value});
@@ -135,7 +130,6 @@ async function updateField(button){
    status.textContent='Updated successfully';status.className='status ok';
 )HTML"));
 
-    // JavaScript - chunk 4
     out.print(F(R"HTML(
    const timer=setTimeout(()=>{status.textContent='';status.className='status';successTimers.delete(row)},5000);
    successTimers.set(row,timer);
@@ -145,7 +139,6 @@ async function updateField(button){
 }
 )HTML"));
 
-    // JavaScript - chunk 5
     out.print(F(R"HTML(
 document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('.new-value input').forEach(input=>input.addEventListener('input',()=>{
@@ -229,7 +222,19 @@ document.addEventListener('DOMContentLoaded',()=>{
             }
             else
             {
-                out.print(f.type == ConfigFieldType::Text ? F("<input type='text'") : F("<input type='number'"));
+                if (f.type == ConfigFieldType::Float || f.type == ConfigFieldType::Integer)
+                {
+                    out.print(F("<input type='number'"));
+                }
+                else if (f.type == ConfigFieldType::Text || f.type == ConfigFieldType::IpAddressLike)
+                {
+                    out.print(F("<input type='text'"));
+                }
+                else
+                {
+                    _error("Unknown Config field type");
+                }
+
                 if (f.hasRange)
                 {
                     char attr[64];
@@ -280,13 +285,6 @@ void WebpageService::_generate_default_config()
 {
     _config.data.maxClients = 4;
     _config.data.serverPort = 80;
-}
-
-void WebpageService::_print_config()
-{
-    _info("Config:");
-    _infof("\tServer Port: %d", _config.data.serverPort);
-    _infof("\tMaximum number of clients: %d", _config.data.maxClients);
 }
 
 void WebpageService::_html_escape(Print &out, const char *outputStr)

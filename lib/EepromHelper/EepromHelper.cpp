@@ -41,7 +41,7 @@ int EepromHelper::read_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8
     {
         _warningf("Attempted to read %d bytes. Only managed %d", numBytes, numBytesRead);
     }
-    if (crc != NULL)
+    if (crc != nullptr)
     {
         crc->add(data, numBytesRead);
     }
@@ -61,7 +61,7 @@ int EepromHelper::write_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC
     {
         _warningf("Attempted to write %d bytes. Only managed %d", numBytes, numBytesWritten);
     }
-    if (crc != NULL)
+    if (crc != nullptr)
     {
         crc->add(data, numBytesWritten);
     }

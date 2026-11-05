@@ -95,16 +95,16 @@ void TFTHandler::_init_lvgl()
 void TFTHandler::_reset_tft()
 {
     digitalWrite(_gpioReset, 0);
-    delay(100);
+    delay(10);
     digitalWrite(_gpioReset, 1);
-    delay(100);
+    delay(10);
 }
 
 void TFTHandler::_allocate_buffers(int bufferSizeBytes)
 {
     _buf0 = (uint16_t *)malloc(bufferSizeBytes);
     _buf1 = (uint16_t *)malloc(bufferSizeBytes);
-    if ((_buf0 == NULL) || (_buf1 == NULL))
+    if ((_buf0 == nullptr) || (_buf1 == nullptr))
     {
         while (1)
             ;

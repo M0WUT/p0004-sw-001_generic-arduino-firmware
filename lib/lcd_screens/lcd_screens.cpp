@@ -16,7 +16,7 @@ void create_startup_screen(lv_obj_t *startup_screen)
     lv_img_set_src(logo_img, &logo);
     lv_obj_set_style_image_recolor(logo_img, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_image_recolor_opa(logo_img, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_align(logo_img, LV_ALIGN_TOP_LEFT, 10, 10);
+    lv_obj_align(logo_img, LV_ALIGN_TOP_LEFT, 7, 10);
 
     // GTE logo - white
     LV_IMAGE_DECLARE(gte_logo);
@@ -24,16 +24,12 @@ void create_startup_screen(lv_obj_t *startup_screen)
     lv_img_set_src(gteLogoOrange, &gte_logo);
     lv_obj_set_style_image_recolor(gteLogoOrange, M0WUT_DEFAULT_FOREGROUND, LV_PART_MAIN);
     lv_obj_set_style_image_recolor_opa(gteLogoOrange, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_align(gteLogoOrange, LV_ALIGN_TOP_RIGHT, -10, 10);
+    lv_obj_align(gteLogoOrange, LV_ALIGN_TOP_RIGHT, -7, 10);
 
     // Logo is 115 pixels high plus 10 pixels offset from top
     // so we have 170-125 = 45 pixels spare
 
     const int version_y_offset = -25;
-
-    // lv_obj_t *m0wut_label = lv_label_create(startup_screen);
-    // lv_label_set_text(m0wut_label, "  By M0WUT");
-    // lv_obj_align(m0wut_label, LV_ALIGN_BOTTOM_LEFT, 10, version_y_offset);
 
     lv_obj_t *version_label = lv_label_create(startup_screen);
     lv_label_set_text_fmt(version_label, "%s       %s", VERSION_STRING, BUILD_TIMESTAMP);

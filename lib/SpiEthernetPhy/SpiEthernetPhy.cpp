@@ -60,7 +60,7 @@ bool SpiEthernetPhy::w5500_present()
 void SpiEthernetPhy::_reset_phy()
 {
     digitalWrite(_gpio_rstn, LOW);
-    delay(500);
+    delay(10);
     digitalWrite(_gpio_rstn, HIGH);
     delay(10);
 }

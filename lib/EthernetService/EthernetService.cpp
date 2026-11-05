@@ -21,8 +21,11 @@ void EthernetService::initialise(ServiceContext *ctx)
         _error("Failed to detect W5500 Ethernet PHY");
     }
 
+    Ethernet.setHostName(_config.data.hostname);
+
     _udp = new EthernetUDP();
-    _ntpClient = new NTPClient(*_udp, _config.data.ntpServerAddress, 0, _config.data.ntpUpdateIntervalSeconds * 1000);
+    // NTPClient takes updateInterval argument in milliseconds while feels excessive!
+    _ntpClient = new NTPClient(*_udp, _config.data.ntpServerAddress, 0, _config.data.ntpUpdateIntervalMinutes * 60 * 1000);
 }
 
 void EthernetService::_get_ip_address()
@@ -84,29 +87,19 @@ void EthernetService::_generate_default_config()
 
     _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
 
+    snprintf(_config.data.hostname, sizeof(_config.data.hostname), "gte-%02x%02x%02x", _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
+
     // NTP
     _config.data.useNtp = true;
     String ntpServer = "europe.pool.ntp.org";
     snprintf(_config.data.ntpServerAddress, ntpServer.length() + 1, "%s\0", ntpServer.c_str());
-    _config.data.ntpUpdateIntervalSeconds = 86400;
-}
-
-void EthernetService::_print_config()
-{
-    _info("Config:");
-    _infof("\tMAC Address: %02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
-    _infof("\tUse DHCP: %s", _config.data.useDhcp ? "Yes" : "No");
-    _infof("\tStatic IP: %d.%d.%d.%d", _config.data.staticIpAddress[0], _config.data.staticIpAddress[1], _config.data.staticIpAddress[2], _config.data.staticIpAddress[3]);
-    _infof("\tSubnet Mask: %d.%d.%d.%d", _config.data.subnetMask[0], _config.data.subnetMask[1], _config.data.subnetMask[2], _config.data.subnetMask[3]);
-    _infof("\tUse NTP: %s", _config.data.useNtp ? "Yes" : "No");
-    _infof("\tNTP Server: %s", _config.data.ntpServerAddress);
-    _infof("\tNTP Update Interval (seconds): %lu", _config.data.ntpUpdateIntervalSeconds);
+    _config.data.ntpUpdateIntervalMinutes = 1440;
 }
 
 void EthernetService::tick()
 {
     _update_link_state();
-    if (_linkUp && _ntpClient != NULL)
+    if (_linkUp && _ntpClient != nullptr)
     {
         // Update returns true if a successful update was made
         // sadly, it returns false if either the update failed
@@ -137,7 +130,16 @@ void EthernetService::tick()
 
 void EthernetService::get_config_fields(ConfigFieldList &fields) const
 {
+
+    char macAddressStr[18];
+    snprintf(macAddressStr, sizeof(macAddressStr), "%02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
     fields.addBoolean("useDhcp", "Use DHCP?", _config.data.useDhcp);
+    fields.addText("hostname", "Hostname", _config.data.hostname);
+    fields.addIpLike("staticIp", "Static IP Address", _config.data.staticIpAddress);
+    fields.addIpLike("subnetMask", "Subnet Mask", _config.data.subnetMask);
+    fields.addBoolean("useNtp", "Try to sync with NTP?", _config.data.useNtp);
+    fields.addText("ntpServer", "NTP Server", _config.data.ntpServerAddress);
+    fields.addInteger("ntpUpdateInterval", "NTP Update Interval (minutes)", _config.data.ntpUpdateIntervalMinutes, 1, 10000);
 }
 
 bool EthernetService::validate_config_field(const char *, const ConfigValue &, char *, size_t)

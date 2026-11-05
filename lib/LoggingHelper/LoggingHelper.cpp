@@ -3,8 +3,7 @@
 LoggingHelper::LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper, int gpioLedRed, int gpioLedGreen, int gpioLedBlue, LoggingLevel loggingLevel) : _uart(gpio_uart_rx, gpio_uart_tx), _timeHelper(timeHelper), _gpioLedRed(gpioLedRed), _gpioLedGreen(gpioLedGreen), _gpioLedBlue(gpioLedBlue), _loggingLevel(loggingLevel)
 {
 
-    delay(2000);
-    _uart.begin(UART_DEBUG_BAUD);
+        _uart.begin(UART_DEBUG_BAUD);
     _uart.print("\r\n\
  ██████╗████████╗███████╗\r\n\
 ██╔════╝╚══██╔══╝██╔════╝\r\n\

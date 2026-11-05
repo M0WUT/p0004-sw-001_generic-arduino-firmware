@@ -33,7 +33,7 @@ void setup()
 {
   tft = create_tft_handler(SPISettings(60000000, MSBFIRST, SPI_MODE0), gpio_tft_mosi, gpio_tft_miso, gpio_tft_sclk, gpio_tft_cs, gpio_tft_dc, gpio_tft_rst, gpio_tft_bl, tft_width, tft_height, tft_rotation);
   disp = tft->get_lvgl_display();
-  startup_screen = lv_obj_create(NULL);
+  startup_screen = lv_obj_create(nullptr);
   create_startup_screen(startup_screen);
   lv_screen_load(startup_screen);
 
@@ -52,10 +52,10 @@ void setup()
 
   lv_obj_t *init_label = lv_label_create(startup_screen);
   lv_label_set_text(init_label, "By Dan M0WUT");
-  lv_obj_align(init_label, LV_ALIGN_BOTTOM_MID, 0, -8);
+  lv_obj_align(init_label, LV_ALIGN_BOTTOM_MID, 0, -7);
   lv_obj_set_style_text_align(init_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
   lv_obj_set_style_text_color(init_label, lv_color_white(), LV_PART_MAIN);
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < 500; i++)
   {
     lv_task_handler();
     delay(1);
@@ -64,7 +64,7 @@ void setup()
   BaseService **serviceList = serviceHelper.get_service_list();
   for (int i = 0; i < serviceHelper.get_num_services(); i++)
   {
-    if (serviceList[i] == NULL)
+    if (serviceList[i] == nullptr)
       continue;
     lv_label_set_text_fmt(init_label, "Starting %s service...", serviceList[i]->get_name());
 

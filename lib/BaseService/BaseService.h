@@ -19,8 +19,8 @@ public:
     virtual bool validate_config_field(const char *, const ConfigValue &, char *, size_t) = 0;
     virtual bool update_config_field(const char *id, const ConfigValue &value,
                                      char *error, size_t errorSize) = 0;
-    static bool parse_new_config_value(const ConfigField &f, const char *text, ConfigValue &v,
-                                       char *error, size_t errorSize);
+    bool parse_new_config_value(const ConfigField &f, const char *text, ConfigValue &v,
+                                char *error, size_t errorSize);
     bool apply_config_update(const char *id, const char *requested,
                              char *message, size_t messageSize,
                              char *accepted, size_t acceptedSize);
@@ -33,7 +33,7 @@ protected:
     bool _load_eeprom_config();
     virtual ConfigData *_get_config() = 0;
     virtual void _generate_default_config() = 0;
-    virtual void _print_config() = 0;
+    void _print_config();
 
 private:
     LoggingHelper *_getLoggingHelper();

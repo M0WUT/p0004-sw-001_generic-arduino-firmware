@@ -6,7 +6,7 @@ ServiceHelper::ServiceHelper(HelperContext *ctx) : _ctx(ctx)
     _serviceList = (BaseService **)malloc((sizeof(BaseService *) * get_num_services()));
     for (int i = 0; i < get_num_services(); i++)
     {
-        _serviceList[i] = NULL;
+        _serviceList[i] = nullptr;
     }
 }
 void ServiceHelper::register_services(BaseService **serviceList, size_t len)
@@ -15,7 +15,7 @@ void ServiceHelper::register_services(BaseService **serviceList, size_t len)
     {
         ServiceId id = serviceList[i]->getServiceId();
         int index = id._to_integral();
-        if (_serviceList[index] != NULL)
+        if (_serviceList[index] != nullptr)
         {
             _ctx->loggingHelper->error("Service Helper", "Attempted to create multiple instances of the same service");
         }
@@ -27,7 +27,7 @@ BaseService *ServiceHelper::get_service(ServiceId serviceId)
 {
     int index = serviceId._to_integral();
     BaseService *ret = _serviceList[index];
-    if (ret == NULL)
+    if (ret == nullptr)
     {
         _ctx->loggingHelper->error("Service Helper", "Requested information on non-existent service");
     }
@@ -38,7 +38,7 @@ void ServiceHelper::tick()
 {
     for (int i = 0; i < get_num_services(); i++)
     {
-        if (_serviceList[i] != NULL)
+        if (_serviceList[i] != nullptr)
             _serviceList[i]->tick();
     }
 }

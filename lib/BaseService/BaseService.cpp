@@ -48,6 +48,18 @@ bool BaseService::_load_eeprom_config()
     return _ctx->eepromHelper->read_service_config(_serviceId, config, config->size(), config->version);
 }
 
+void BaseService::_print_config()
+{
+    _infof("Config:");
+    ConfigFieldList fields;
+    get_config_fields(fields);
+    for (int i = 0; i < fields.count; i++)
+    {
+        ConfigField field = fields.fields[i];
+        _infof("\t%s: %s", field.label, field.displayValue);
+    }
+}
+
 bool BaseService::parse_new_config_value(
     const ConfigField &f, // Field to be updated
     const char *text,     // String version of new value
@@ -146,13 +158,33 @@ bool BaseService::parse_new_config_value(
         snprintf(error, errorSize, "Invalid boolean");
         return false;
     }
-    if (strlen(text) >= DISPLAY_VALUE_BUFFER_SIZE)
+    if (f.type == ConfigFieldType::Text)
     {
-        snprintf(error, errorSize, "Text too long");
-        return false;
+        if (strlen(text) >= DISPLAY_VALUE_BUFFER_SIZE)
+        {
+            snprintf(error, errorSize, "Text too long");
+            return false;
+        }
+        v.text = text;
+        return true;
     }
-    v.text = text;
-    return true;
+    if (f.type == ConfigFieldType::IpAddressLike)
+    {
+        IPAddress ipAddress;
+        if (!ipAddress.fromString(text))
+        {
+            snprintf(error, errorSize, "Please enter valid IPv4 address");
+            return false;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            v.ipAddress[i] = ipAddress[i];
+        }
+        return true;
+    }
+    snprintf(error, errorSize, "Unknown config field type");
+    return false;
 }
 
 bool BaseService::apply_config_update(const char *id, const char *requested,
@@ -162,12 +194,6 @@ bool BaseService::apply_config_update(const char *id, const char *requested,
     if (!message || !accepted || !messageSize || !acceptedSize)
         return false;
     message[0] = accepted[0] = 0;
-    // @TODO sanity check service Id and conversion thereof
-    // if (!services || index >= count || !services[index] || !id || !requested)
-    // {
-    //     snprintf(message, messageSize, "Invalid service or parameter");
-    //     return false;
-    // }
 
     ConfigFieldList fields;
     get_config_fields(fields);
@@ -178,7 +204,7 @@ bool BaseService::apply_config_update(const char *id, const char *requested,
         return false;
     }
     ConfigValue v;
-    if (!BaseService::parse_new_config_value(*f, requested, v, message, messageSize))
+    if (!parse_new_config_value(*f, requested, v, message, messageSize))
         return false;
     if (!validate_config_field(id, v, message, messageSize))
     {

@@ -35,17 +35,16 @@ public:
     void initialise(ServiceContext *ctx);
     void tick();
     void get_config_fields(ConfigFieldList &fields) const;
-    bool validate_config_field(const char *, const ConfigValue &, char *, size_t);
+    bool validate_config_field(const char *id, const ConfigValue &value, char *error, size_t errorSize);
     bool update_config_field(const char *id, const ConfigValue &value,
                              char *error, size_t errorSize);
-
     void generate_config_page(Print &out);
 
 private:
     ConfigData *_get_config() { return &_config; };
     const char *get_name() override { return "Webpage"; }
     void _generate_default_config();
-    void _print_config();
+    // void _print_config();
     EthernetServer *_server;
     bool _serverRunning = false;
     void _html_escape(Print &out, const char *outputStr);

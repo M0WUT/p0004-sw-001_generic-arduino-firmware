@@ -1,5 +1,4 @@
-#ifndef EEPROMHELPER_H
-#define EEPROMHELPER_H
+#pragma once
 
 #include "eeprom_24aa256uid.h"
 #include "ServiceId.h"
@@ -23,8 +22,8 @@ public:
 
 private:
     EEPROM24AA256UID _eeprom;
-    int read_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8 *crc = NULL);
-    int write_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8 *crc = NULL);
+    int read_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8 *crc = nullptr);
+    int write_bytes(uint16_t regAddr, uint8_t *data, int numBytes, CRC8 *crc = nullptr);
     uint8_t read8(uint16_t regAddr);
     void write8(uint16_t regAddr, uint8_t data);
     uint8_t read16(uint16_t regAddr);
@@ -51,5 +50,3 @@ private:
     uint8_t *_fakeEeprom; // Used for debugging to have the EEPROM in RAM, not used normally
 #endif
 };
-
-#endif // EEPROMHELPER_H

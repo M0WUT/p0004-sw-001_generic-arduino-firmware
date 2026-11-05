@@ -31,7 +31,8 @@ enum class ConfigFieldType : uint8_t
     Text,
     Integer,
     Float,
-    Boolean
+    Boolean,
+    IpAddressLike, // Like because it could be a subnet mask / dns address etc thing of form aaa.bbb.ccc.ddd
 };
 
 struct ConfigValue
@@ -40,11 +41,12 @@ struct ConfigValue
     int32_t integer = 0;
     double number = 0;
     bool boolean = false;
+    uint8_t ipAddress[4] = {0, 0, 0, 0};
     const char *text = nullptr; // Borrowed from HTTP request buffer.
 };
 
 // Struct that holds all the auxiliary stuff about an item in config data
-// but not the dat itself
+// but not the data itself - just a string representation
 struct ConfigField
 {
     char id[FIELD_ID_BUFFER_SIZE] = {};
@@ -117,6 +119,12 @@ struct ConfigFieldList
     bool addBoolean(const char *id, const char *label, bool value)
     {
         return add(id, label, ConfigFieldType::Boolean, value ? "true" : "false") != nullptr;
+    }
+    bool addIpLike(const char *id, const char *label, const uint8_t ipAddress[4])
+    {
+        char ipAddressStr[16];
+        snprintf(ipAddressStr, sizeof(ipAddressStr), "%d.%d.%d.%d", ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3]);
+        return add(id, label, ConfigFieldType::IpAddressLike, ipAddressStr) != nullptr;
     }
     const ConfigField *find(const char *id) const
     {
