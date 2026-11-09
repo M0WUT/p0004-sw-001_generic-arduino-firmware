@@ -6,6 +6,7 @@
 #include "ServiceId.h"
 #include "ConfigData.h"
 #include "NamedTask.h"
+#include "ServiceStatus.h"
 
 class BaseService : public NamedTask
 {
@@ -24,6 +25,7 @@ public:
     bool apply_config_update(const char *id, const char *requested,
                              char *message, size_t messageSize,
                              char *accepted, size_t acceptedSize);
+    virtual void get_status_fields(StatusFieldList &fields) const = 0;
 
 protected:
     ServiceId _serviceId;

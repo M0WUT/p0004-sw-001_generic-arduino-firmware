@@ -32,7 +32,7 @@ private:
     void *_buf1;
 
     SPISettings _spiSettings = SPISettings(60000000, MSBFIRST, SPI_MODE0);
-    lv_display_t *_disp = NULL;
+    lv_display_t *_disp = nullptr;
     bool _bus_busy = false;
     void _init_io();
     void _init_lvgl();

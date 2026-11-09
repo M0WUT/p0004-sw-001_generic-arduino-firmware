@@ -78,12 +78,13 @@ void EthernetService::_generate_default_config()
 {
     _config.data.useDhcp = true;
 
-    uint8_t defaultStaticIpAddress[4] = {192, 168, 1, 1};
+    uint8_t defaultStaticIpAddress[4] = {192, 168, 1, 2};
     uint8_t defaultSubnetMask[4] = {255, 255, 255, 0};
+    uint8_t defaultDnsIpAddress[4] = {192, 168, 1, 1};
 
     memcpy(_config.data.staticIpAddress, defaultStaticIpAddress, sizeof(defaultStaticIpAddress));
-    // Could do with memset but less flexible
     memcpy(_config.data.subnetMask, defaultSubnetMask, sizeof(defaultSubnetMask));
+    memcpy(_config.data.dnsIpAddress, defaultDnsIpAddress, sizeof(defaultDnsIpAddress));
 
     _ctx->eepromHelper->get_mac_address(_config.data.macAddress, sizeof(_config.data.macAddress));
 
@@ -131,18 +132,17 @@ void EthernetService::tick()
 void EthernetService::get_config_fields(ConfigFieldList &fields) const
 {
 
-    char macAddressStr[18];
-    snprintf(macAddressStr, sizeof(macAddressStr), "%02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
     fields.addBoolean("useDhcp", "Use DHCP?", _config.data.useDhcp);
     fields.addText("hostname", "Hostname", _config.data.hostname);
     fields.addIpLike("staticIp", "Static IP Address", _config.data.staticIpAddress);
-    fields.addIpLike("subnetMask", "Subnet Mask", _config.data.subnetMask);
+    fields.addIpLike("subnetMask", "Subnet Mask (static IP only)", _config.data.subnetMask);
+    fields.addIpLike("dnsAddress", "DNS Server (static IP only)", _config.data.dnsIpAddress);
     fields.addBoolean("useNtp", "Try to sync with NTP?", _config.data.useNtp);
     fields.addText("ntpServer", "NTP Server", _config.data.ntpServerAddress);
     fields.addInteger("ntpUpdateInterval", "NTP Update Interval (minutes)", _config.data.ntpUpdateIntervalMinutes, 1, 10000);
 }
 
-bool EthernetService::validate_config_field(const char *, const ConfigValue &, char *, size_t)
+bool EthernetService::validate_config_field(const char *id, const ConfigValue &value, char *error, size_t errorSize)
 {
     return true;
 }
@@ -150,6 +150,17 @@ bool EthernetService::validate_config_field(const char *, const ConfigValue &, c
 bool EthernetService::update_config_field(const char *id, const ConfigValue &value, char *error, size_t errorSize)
 {
     return true;
+}
+
+void EthernetService::get_status_fields(StatusFieldList &fields) const
+{
+    char macAddressStr[18];
+    snprintf(macAddressStr, sizeof(macAddressStr), "%02X:%02X:%02X:%02X:%02X:%02X", _config.data.macAddress[0], _config.data.macAddress[1], _config.data.macAddress[2], _config.data.macAddress[3], _config.data.macAddress[4], _config.data.macAddress[5]);
+    fields.add("MAC Address", macAddressStr);
+    fields.add("Ethernet Link Status", _linkUp ? "Connected" : "Disconnected");
+    fields.add("IP Address", Ethernet.localIP().toString().c_str());
+    fields.add("Subnet Mask", Ethernet.subnetMask().toString().c_str());
+    fields.add("DNS Server", Ethernet.dnsServerIP().toString().c_str());
 }
 
 bool EthernetService::link_up()

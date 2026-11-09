@@ -39,6 +39,7 @@ public:
     bool update_config_field(const char *id, const ConfigValue &value,
                              char *error, size_t errorSize);
     void generate_config_page(Print &out);
+    void get_status_fields(StatusFieldList &fields) const;
 
 private:
     ConfigData *_get_config() { return &_config; };
@@ -51,6 +52,8 @@ private:
     void _handle_client(EthernetClient &client);
     static void _send_response(EthernetClient &client, int code, const char *reason, const char *content);
     static bool _read_line(EthernetClient &client, char *buf, size_t capacity);
+    void _json_escape(Print &out, const char *str);
+    void _send_status(EthernetClient &client);
     bool _url_decode(const char *src, size_t length, char *dst, size_t capacity);
     int _hex_digit(char c);
     bool _parse_unsigned(const char *p, size_t &result);

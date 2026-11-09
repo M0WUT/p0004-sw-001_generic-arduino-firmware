@@ -111,7 +111,7 @@ lv_obj_t *GridHandler::get_cell(int cellIndex)
 {
   if (cellIndex >= _numCells)
   {
-    return NULL;
+    return nullptr;
   }
 
   return _cells[cellIndex];

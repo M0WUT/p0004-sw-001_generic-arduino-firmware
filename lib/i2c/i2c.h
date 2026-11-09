@@ -8,7 +8,7 @@ class I2CBus
 {
 public:
     I2CBus(const int gpio_scl, const int gpio_sda);
-    int scan(int start_addr = 1, int stop_addr = 127, int *buf = NULL, int buf_length = 0xFF);
+    int scan(int start_addr = 1, int stop_addr = 127, int *buf = nullptr, int buf_length = 0xFF);
     friend class I2CDevice;
 
 private:

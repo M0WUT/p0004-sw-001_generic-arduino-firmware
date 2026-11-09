@@ -14,6 +14,7 @@ struct EthernetServiceConfigData
     char hostname[32];
     uint8_t staticIpAddress[4];
     uint8_t subnetMask[4];
+    uint8_t dnsIpAddress[4];
     bool useNtp;
     char ntpServerAddress[32];
     uint32_t ntpUpdateIntervalMinutes;
@@ -39,6 +40,7 @@ public:
     bool validate_config_field(const char *, const ConfigValue &, char *, size_t);
     bool update_config_field(const char *id, const ConfigValue &value,
                              char *error, size_t errorSize);
+    void get_status_fields(StatusFieldList &fields) const;
 
     // Class specific
     bool link_up();
