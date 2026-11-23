@@ -17,5 +17,6 @@
 
 #include "EthernetService.h"
 #include "WebpageService.h"
+#include "HomeAssistantService.h"
 
 #endif // INC_MAIN_H

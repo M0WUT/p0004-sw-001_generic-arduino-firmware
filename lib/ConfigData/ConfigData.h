@@ -77,7 +77,7 @@ struct ConfigFieldList
         f.type = type;
         return &f;
     }
-    bool addText(const char *id, const char *label, const char *value)
+    bool addString(const char *id, const char *label, const char *value)
     {
         return add(id, label, ConfigFieldType::Text, value) != nullptr;
     }

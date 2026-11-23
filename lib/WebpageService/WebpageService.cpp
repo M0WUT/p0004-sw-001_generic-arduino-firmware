@@ -891,7 +891,7 @@ void WebpageService::_handle_client(EthernetClient &client)
     }
     size_t index = 0;
     char id[FIELD_ID_BUFFER_SIZE] = {}, value[DISPLAY_VALUE_BUFFER_SIZE] = {};
-    if (!parseUpdateBody(body, index, id, sizeof(id), value, sizeof(value)))
+    if (!_parse_update_body(body, index, id, sizeof(id), value, sizeof(value)))
     {
         _send_response(client, 400, "Bad Request", "Malformed update request");
         return;
@@ -927,8 +927,8 @@ bool WebpageService::_parse_unsigned(const char *p, size_t &result)
     result = value;
     return true;
 }
-bool WebpageService::parseUpdateBody(const char *body, size_t &serviceIndex, char *id, size_t idSize,
-                                     char *value, size_t valueSize)
+bool WebpageService::_parse_update_body(const char *body, size_t &serviceIndex, char *id, size_t idSize,
+                                        char *value, size_t valueSize)
 {
     bool hasService = false, hasField = false, hasValue = false;
     const char *p = body;

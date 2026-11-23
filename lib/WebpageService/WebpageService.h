@@ -57,6 +57,6 @@ private:
     bool _url_decode(const char *src, size_t length, char *dst, size_t capacity);
     int _hex_digit(char c);
     bool _parse_unsigned(const char *p, size_t &result);
-    bool parseUpdateBody(const char *body, size_t &serviceIndex, char *id, size_t idSize,
-                         char *value, size_t valueSize);
+    bool _parse_update_body(const char *body, size_t &serviceIndex, char *id, size_t idSize,
+                            char *value, size_t valueSize);
 };

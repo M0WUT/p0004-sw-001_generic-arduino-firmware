@@ -2,6 +2,9 @@
 
 #include "BaseService.h"
 #include "ServiceContext.h"
+#include "ServiceHelper.h"
+
+class ServiceHelper;
 
 struct TemplateServiceConfigData
 {
@@ -40,6 +43,10 @@ public:
     // so just accept the new value and write to EEPROM
     bool update_config_field(const char *id, const ConfigValue &value,
                              char *error, size_t errorSize);
+
+    // Similar to get_config_fields but for things that might dynamically update
+    // and are read-only rather than set by the user
+    void get_status_fields(StatusFieldList &fields) const;
 
 private:
     // Required overrides from BaseService

@@ -133,12 +133,12 @@ void EthernetService::get_config_fields(ConfigFieldList &fields) const
 {
 
     fields.addBoolean("useDhcp", "Use DHCP?", _config.data.useDhcp);
-    fields.addText("hostname", "Hostname", _config.data.hostname);
+    fields.addString("hostname", "Hostname", _config.data.hostname);
     fields.addIpLike("staticIp", "Static IP Address", _config.data.staticIpAddress);
     fields.addIpLike("subnetMask", "Subnet Mask (static IP only)", _config.data.subnetMask);
     fields.addIpLike("dnsAddress", "DNS Server (static IP only)", _config.data.dnsIpAddress);
     fields.addBoolean("useNtp", "Try to sync with NTP?", _config.data.useNtp);
-    fields.addText("ntpServer", "NTP Server", _config.data.ntpServerAddress);
+    fields.addString("ntpServer", "NTP Server", _config.data.ntpServerAddress);
     fields.addInteger("ntpUpdateInterval", "NTP Update Interval (minutes)", _config.data.ntpUpdateIntervalMinutes, 1, 10000);
 }
 

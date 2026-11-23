@@ -25,7 +25,8 @@ ServiceContext serviceContext = {
 
 EthernetService ethernetService = EthernetService();
 WebpageService webpageService = WebpageService();
-BaseService *coreServiceList[] = {&ethernetService, &webpageService};
+HomeAssistantService homeAssistantService = HomeAssistantService();
+BaseService *coreServiceList[] = {&ethernetService, &webpageService, &homeAssistantService};
 BaseService *extraServiceList[] = {};
 lv_obj_t *startup_screen;
 

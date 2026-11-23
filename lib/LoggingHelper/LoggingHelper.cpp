@@ -3,7 +3,7 @@
 LoggingHelper::LoggingHelper(int gpio_uart_tx, int gpio_uart_rx, TimeHelper *timeHelper, int gpioLedRed, int gpioLedGreen, int gpioLedBlue, LoggingLevel loggingLevel) : _uart(gpio_uart_rx, gpio_uart_tx), _timeHelper(timeHelper), _gpioLedRed(gpioLedRed), _gpioLedGreen(gpioLedGreen), _gpioLedBlue(gpioLedBlue), _loggingLevel(loggingLevel)
 {
 
-        _uart.begin(UART_DEBUG_BAUD);
+    _uart.begin(UART_DEBUG_BAUD);
     _uart.print("\r\n\
  ██████╗████████╗███████╗\r\n\
 ██╔════╝╚══██╔══╝██╔════╝\r\n\
@@ -122,8 +122,12 @@ void LoggingHelper::_printStatusMessage(const char *serviceName, const char *mes
 
     _print_timestamp();
     _uart.print("[");
-    _uart.print(serviceName);
-    _uart.print("]\t");
+    size_t nameLength = _uart.print(serviceName);
+    _uart.print("]");
+    for (size_t x = nameLength; x < 16; x++)
+    {
+        _uart.print(" ");
+    }
     _uart.println(messageStr);
     if (colourStr)
     {
